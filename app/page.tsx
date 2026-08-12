@@ -1,4 +1,5 @@
 import { Branches } from "@/components/site/branches";
+import { FloatingActions } from "@/components/site/floating-actions";
 import { Footer } from "@/components/site/footer";
 import { Header } from "@/components/site/header";
 import { Hero } from "@/components/site/hero";
@@ -34,6 +35,7 @@ export default function Home() {
         <Reservation />
       </main>
       <Footer />
+      <FloatingActions />
     </>
   );
 }

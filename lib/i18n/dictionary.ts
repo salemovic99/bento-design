@@ -124,6 +124,8 @@ const en = {
     youtube: "Entrecôte Café de Paris on YouTube",
     selectLanguage: "Select language",
     openInMaps: "Open in Google Maps (opens in a new tab)",
+    whatsapp:
+      "Message Entrecôte Café de Paris on WhatsApp (opens in a new tab)",
   },
 };
 
@@ -219,6 +221,7 @@ const ar: Dictionary = {
     youtube: "أنتروكوت كافيه دو باريس على يوتيوب",
     selectLanguage: "اختر اللغة",
     openInMaps: "افتح في خرائط جوجل (يفتح في تبويب جديد)",
+    whatsapp: "راسل أنتروكوت كافيه دو باريس على واتساب (يفتح في تبويب جديد)",
   },
 };
 
