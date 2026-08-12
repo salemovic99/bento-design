@@ -51,7 +51,7 @@ content/
   story.ts            the four heritage beats on the timeline
   dishes.ts           bento tiles, incl. their grid spans
   branches.ts         locations, incl. their map pin positions
-  site.ts             phone, socials, service hours, legal links
+  site.ts             the 920 line, socials, service hours, legal links
 lib/
   i18n/               dictionary, provider, plural rules
   motion.ts           the shared motion vocabulary
@@ -117,8 +117,12 @@ scroll-linked parallax renders as still images.
       Unsplash stand-ins — see `public/dishes/CREDITS.md`, then delete it.
       Everything in `public/brand/` and `public/branches/` is real brand assets.
 - [ ] **Replace the placeholder details.** Every file under `content/` carries a
-      `PLACEHOLDER DATA` header noting exactly what is invented: prices, phone
-      numbers, street addresses, opening hours, social handles, map coordinates.
+      `PLACEHOLDER DATA` header noting exactly what is invented: prices, street
+      addresses, opening hours, social handles, map coordinates. The phone is
+      real — the unified 920 line in `site.ts`, which every branch shares.
+- [ ] **Get the WhatsApp number.** `site.whatsapp` is null, because a 920 code
+      cannot receive on WhatsApp; the floating WhatsApp disc stays hidden until
+      an international mobile number lands there.
 - [ ] **Have the house verify the story copy.** `content/story.ts` treats only
       "1930" and "Geneva" as fact and names no dates or people beyond them; the
       rest is written to the spirit of the formula and needs confirming.

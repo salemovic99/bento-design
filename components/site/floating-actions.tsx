@@ -12,8 +12,14 @@ import { WhatsAppIcon } from "./brand-icons";
 /** Reveal point, as a fraction of the viewport — roughly the foot of the hero. */
 const REVEAL_AT = 0.8;
 
-/** `wa.me` takes the number in digits only, no `+` and no separators. */
-const whatsappHref = `https://wa.me/${site.phone.replace(/\D/g, "")}`;
+/**
+ * `wa.me` takes the number in digits only, no `+` and no separators — and it
+ * has to be the international one, which is why this reads `site.whatsapp`
+ * rather than the 920 line. Null while that number is outstanding.
+ */
+const whatsappHref = site.whatsapp
+  ? `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`
+  : null;
 
 /**
  * The gold `icon` button is 44px; at the corner these carry more weight than a
@@ -72,18 +78,20 @@ export function FloatingActions() {
           exit="hidden"
           className="fixed end-6 bottom-6 z-40 flex flex-col gap-3"
         >
-          <motion.div variants={softScale}>
-            <Button asChild variant="gold" size="icon" className={fab}>
-              <a
-                href={whatsappHref}
-                target="_blank"
-                rel="noreferrer noopener"
-                aria-label={t.a11y.whatsapp}
-              >
-                <WhatsAppIcon />
-              </a>
-            </Button>
-          </motion.div>
+          {whatsappHref && (
+            <motion.div variants={softScale}>
+              <Button asChild variant="gold" size="icon" className={fab}>
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  aria-label={t.a11y.whatsapp}
+                >
+                  <WhatsAppIcon />
+                </a>
+              </Button>
+            </motion.div>
+          )}
 
           <motion.div variants={softScale}>
             <Button asChild variant="gold" size="icon" className={fab}>
