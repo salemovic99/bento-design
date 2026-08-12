@@ -59,6 +59,12 @@ const en = {
     secondaryCta: "See the formula",
     scroll: "Scroll",
   },
+  story: {
+    eyebrow: "The house",
+    headline: ["A recipe only ever", "passed by hand."],
+    lede: "Four moments stand between a Geneva corner in 1930 and the table waiting for you tonight. Nothing in the formula changed along the way.",
+    cta: "See the formula",
+  },
   dishes: {
     eyebrow: "The formula",
     headline: ["Everything we serve,", "in the order we serve it."],
@@ -148,6 +154,12 @@ const ar: Dictionary = {
     primaryCta: "احجز طاولتك",
     secondaryCta: "تعرّف على الوصفة",
     scroll: "مرِّر",
+  },
+  story: {
+    eyebrow: "الدار",
+    headline: ["وصفة لم تنتقل", "إلا بين الأيدي."],
+    lede: "أربع محطات تفصل بين ناصية في جنيف عام ١٩٣٠ والطاولة التي تنتظرك الليلة. ولم يتغيّر في الوصفة شيء على طول الطريق.",
+    cta: "تعرّف على الوصفة",
   },
   dishes: {
     eyebrow: "الوصفة",

@@ -4,12 +4,13 @@ A bilingual (EN / AR), single-page, bento-composed site for Entrecôte Café de
 Paris — Chez Boubier 1930.
 
 ```
-header → hero → bento signature dishes → bento branches → reservation → footer
+header → hero → story → bento signature dishes → bento branches
+       → reservation → footer
 ```
 
 Each boundary is a scroll-linked bridge rather than a hard cut, so the page
-reads as one continuous take. The tonal arc runs dark → dark → cream → dark →
-dark; the light branches section is a deliberate breath in the middle.
+reads as one continuous take. The tonal arc runs dark → dark → dark → cream →
+dark → dark; the light branches section is a deliberate breath in the middle.
 
 ## Requirements
 
@@ -47,6 +48,7 @@ components/
   site/               every section and its parts
   ui/                 shadcn primitives, themed to the brand
 content/
+  story.ts            the four heritage beats on the timeline
   dishes.ts           bento tiles, incl. their grid spans
   branches.ts         locations, incl. their map pin positions
   site.ts             phone, socials, service hours, legal links
@@ -117,6 +119,9 @@ scroll-linked parallax renders as still images.
 - [ ] **Replace the placeholder details.** Every file under `content/` carries a
       `PLACEHOLDER DATA` header noting exactly what is invented: prices, phone
       numbers, street addresses, opening hours, social handles, map coordinates.
+- [ ] **Have the house verify the story copy.** `content/story.ts` treats only
+      "1930" and "Geneva" as fact and names no dates or people beyond them; the
+      rest is written to the spirit of the formula and needs confirming.
 - [ ] **Wire the reservation form.** It validates and confirms client-side only;
       see the `TODO` in `components/site/reservation-form.tsx`.
 - [ ] **Add the legal pages.** `/privacy` and `/terms` are linked but do not exist.
