@@ -159,6 +159,17 @@ function StoryStage() {
               className={cn(
                 "absolute inset-0",
                 "lg:relative lg:inset-auto lg:aspect-[9/16] lg:h-[min(78svh,46rem)] lg:w-auto lg:shrink-0",
+                /*
+                  Set in from the edge rather than against it, so the panel
+                  lands about halfway between the frame edge and the centre and
+                  reads as placed rather than as pushed up against the margin.
+                  A percentage, not a `vw`: it resolves against the container's
+                  content box, which is capped at 1600px, so the panel keeps its
+                  relationship to the copy beside it instead of drifting further
+                  right the wider the screen gets. `ms-` is logical — in Arabic
+                  the whole composition mirrors and the inset moves with it.
+                */
+                "lg:ms-[7%]",
                 // The house treatment for a photograph — the same radius and
                 // hairline the timeline's own images carry.
                 "lg:overflow-hidden lg:rounded-[var(--radius-brand)] lg:border lg:border-gold-600/15",
