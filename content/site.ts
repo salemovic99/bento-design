@@ -19,10 +19,13 @@ export const site = {
   phoneDisplay: "920018998",
   /**
    * WhatsApp needs a full international number; a 920 code cannot receive on
-   * it. Null until the house gives us the mobile line — `FloatingActions`
-   * drops the WhatsApp disc rather than shipping a dead `wa.me` link.
+   * it. `FloatingActions` drops the WhatsApp disc when this is null, rather
+   * than shipping a dead `wa.me` link.
+   *
+   * TODO: PLACEHOLDER — not a real line. Replace with the house's own mobile
+   * number before launch, or set back to `null` to hide the disc again.
    */
-  whatsapp: null as string | null,
+  whatsapp: "+966 55 000 0000" as string | null,
   email: "reservations@entrecote.sa",
   socials: [
     { key: "instagram", href: "https://instagram.com/entrecotecafedeparis" },
