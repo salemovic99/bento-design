@@ -6,7 +6,7 @@ import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/language-provider";
-import { EASE, useBrandMotion } from "@/lib/motion";
+import { DUR, EASE, useBrandMotion } from "@/lib/motion";
 
 import heroImage from "@/public/brand/hero-formula.jpg";
 
@@ -44,10 +44,11 @@ export function Hero() {
     <section
       ref={section}
       /*
-        Three bands, top to bottom: the padding the fixed header needs, the
-        copy centred in whatever is left, and the actions pinned to the foot.
-        The bottom padding carries both the buttons and the scroll cue beneath
-        them, so it is deeper than the visual gap suggests.
+        Type at the two edges, photograph in between: the eyebrow sits under
+        the header padding at the top, the headline and actions are pushed to
+        the foot by `mt-auto`, and everything between them is picture. The
+        bottom padding carries the scroll cue beneath the buttons, so it is
+        deeper than the visual gap suggests.
       */
       className="on-green relative isolate flex min-h-dvh flex-col overflow-hidden bg-green-900 pb-24 pt-32 sm:pb-28 sm:pt-40 lg:pb-32 lg:pt-48"
     >
@@ -86,79 +87,73 @@ export function Hero() {
         style={still ? { opacity: 0 } : { opacity: dimOpacity }}
       />
 
-      {/* ── Copy: centred in the space above the actions ─────────────────── */}
-      <motion.div
-        style={still ? undefined : { y: copyY, opacity: copyOpacity }}
-        className="flex flex-1 items-center"
-      >
-        <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10">
-          <motion.div
-            key={lang}
-            initial="hidden"
-            animate="visible"
-            variants={m.stagger(0.12, 0.5)}
-            className="text-center"
-          >
-            <motion.p variants={m.fadeUp} className="e-eyebrow">
-              {t.hero.eyebrow}
-            </motion.p>
-
-            {/*
-              A gap, not a margin. The photograph is the reason the section
-              exists and this is the one band of it left uncovered by type, so
-              it is sized to be seen rather than to separate two lines.
-            */}
-            <h1 className="mt-20 sm:mt-28 lg:mt-36">
-              {t.hero.headline.map((line, index) => (
-                <span key={index} className="block overflow-hidden pb-[0.08em]">
-                  <motion.span
-                    variants={m.lineReveal}
-                    /*
-                      The size follows the viewport rather than the type scale.
-                      A 34-character sentence cannot both wrap and stay on one
-                      line, so holding one line means the width dictates the
-                      size — `min()` lets it grow with the frame and stop at
-                      the top of the display scale. `e-display` still supplies
-                      the weight, leading, tracking and colour; only the size
-                      is overridden, and utilities outrank components in v4.
-                    */
-                    className="e-display block whitespace-nowrap text-[min(4.6vw,4.75rem)] text-white"
-                  >
-                    {line}
-                  </motion.span>
-                </span>
-              ))}
-            </h1>
-          </motion.div>
-        </div>
-      </motion.div>
-
-      {/* ── Actions: held at the foot of the section ─────────────────────── */}
+      {/* ── Eyebrow: the head of the frame ──────────────────────────────── */}
       <motion.div
         style={still ? undefined : { y: copyY, opacity: copyOpacity }}
         className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10"
       >
-        {/*
-          Its own entrance rather than the copy's, since it no longer sits
-          inside that stagger — keyed on `lang` the same way, so a language
-          switch replays it as a cut along with everything else.
-        */}
+        <motion.p
+          key={lang}
+          initial={still ? false : { opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: DUR, ease: EASE, delay: 0.4 }}
+          className="e-eyebrow text-center"
+        >
+          {t.hero.eyebrow}
+        </motion.p>
+      </motion.div>
+
+      {/*
+        Nothing between here and the foot. The photograph is the reason the
+        section exists, and `mt-auto` on the block below hands the whole middle
+        of the frame back to it — the type sits at the two edges instead of
+        across the picture.
+      */}
+
+      {/* ── Headline + actions: the foot of the frame ───────────────────── */}
+      <motion.div
+        style={still ? undefined : { y: copyY, opacity: copyOpacity }}
+        className="mx-auto mt-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10"
+      >
         <motion.div
           key={lang}
           initial="hidden"
           animate="visible"
-          variants={m.stagger(0.1, 0.95)}
-          className="flex flex-wrap items-center justify-center gap-3 sm:gap-4"
+          variants={m.stagger(0.12, 0.55)}
+          className="text-center"
         >
-          <motion.div variants={m.fadeUp}>
+          <h1>
+            {t.hero.headline.map((line, index) => (
+              <span key={index} className="block overflow-hidden pb-[0.08em]">
+                <motion.span
+                  variants={m.lineReveal}
+                  /*
+                    The size follows the viewport rather than the type scale.
+                    A 34-character sentence cannot both wrap and stay on one
+                    line, so holding one line means the width dictates the
+                    size — `min()` lets it grow with the frame and stop at the
+                    top of the display scale. `e-display` still supplies the
+                    weight, leading, tracking and colour; only the size is
+                    overridden, and utilities outrank components in v4.
+                  */
+                  className="e-display block whitespace-nowrap text-[min(4.6vw,4.75rem)] text-white"
+                >
+                  {line}
+                </motion.span>
+              </span>
+            ))}
+          </h1>
+
+          <motion.div
+            variants={m.fadeUp}
+            className="mt-9 flex flex-wrap items-center justify-center gap-3 sm:mt-11 sm:gap-4"
+          >
             <Button asChild variant="gold" size="lg">
               <a href="#reservation">
                 {t.hero.primaryCta}
                 <ArrowUpRight className="rtl:-scale-x-100" />
               </a>
             </Button>
-          </motion.div>
-          <motion.div variants={m.fadeUp}>
             <Button asChild variant="outline" size="lg">
               <a href="#dishes">{t.hero.secondaryCta}</a>
             </Button>
