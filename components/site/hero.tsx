@@ -97,7 +97,16 @@ export function Hero() {
           initial={still ? false : { opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: DUR, ease: EASE, delay: 0.4 }}
-          className="e-eyebrow text-center"
+          /*
+            Larger than the site's standard eyebrow — 14→20px against 11→15px.
+            This one is not a label above a heading; it is one of only two
+            pieces of type in the frame, holding the top edge on its own, and at
+            the standard size it read as a caption that had drifted up there.
+            Overridden here rather than in `.e-eyebrow`, which every other
+            section uses in its usual role; utilities outrank components in v4,
+            so the class only loses its `font-size`.
+          */
+          className="e-eyebrow text-center text-[clamp(0.875rem,0.45vw_+_0.72rem,1.25rem)]"
         >
           {t.hero.eyebrow}
         </motion.p>
