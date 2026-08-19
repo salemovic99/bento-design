@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowUpRight, Clock, MapPin, Phone } from "lucide-react";
+import { ArrowUpRight, Clock, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { mapsUrl, type Branch } from "@/content/branches";
 import { useLanguage } from "@/lib/i18n/language-provider";
@@ -9,10 +9,12 @@ import { useBrandMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 /**
- * A branch tile. Photograph as ground, details stacked over a scrim, and two
- * real actions — call, or open directions. Hovering the card lights its pin on
- * the map tile and vice versa, which is what turns a grid of four cards into a
- * single location section.
+ * A branch tile. Photograph as ground, details stacked over a scrim, and one
+ * real action — open directions. The number is deliberately absent: every
+ * branch answers on the same 920 line, which the header, footer and floating
+ * discs already carry. Hovering the card lights its pin on the map tile and
+ * vice versa, which is what turns a grid of four cards into a single location
+ * section.
  */
 export function BranchCard({
   branch,
@@ -87,17 +89,6 @@ export function BranchCard({
             <span className="sr-only">{t.branches.hours}: </span>
             <span className="e-numeric">{pick(branch.hours)}</span>
           </p>
-
-          <a
-            href={`tel:${branch.phone}`}
-            className="inline-flex min-h-11 items-center gap-2 text-[0.75rem] font-light text-gold-200/80 transition-colors duration-300 hover:text-white"
-          >
-            <Phone className="size-3.5 shrink-0 text-gold-600" aria-hidden />
-            <span className="sr-only">{t.branches.phone}: </span>
-            <span className="e-numeric" dir="ltr">
-              {branch.phoneDisplay}
-            </span>
-          </a>
 
           <a
             href={mapsUrl(branch)}
