@@ -52,7 +52,12 @@ export const site = {
     "22:00",
     "22:30",
   ],
-  maxPartySize: 10,
+  /**
+   * The largest party the online form will take. Anything above it is a
+   * floor-plan decision — tables pushed together, a section held — so the form
+   * hands those guests to the call center on `phone` instead of booking them.
+   */
+  maxPartySize: 5,
   foundedIn: 1930,
 } as const;
 
