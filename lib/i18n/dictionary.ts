@@ -68,8 +68,13 @@ const en = {
   dishes: {
     eyebrow: "The formula",
     headline: ["Everything we serve,", "in the order we serve it."],
-    lede: "There is no menu to read. You choose only how your entrecôte is cooked — the rest arrives, twice, without being asked for.",
+    lede: "The formula arrives in one order, and the entrecôte arrives twice. You choose only how it is cooked — the rest comes without being asked for.",
     cta: "Reserve a table",
+    /**
+     * The one currency label on the site. The bento no longer prices anything —
+     * pricing lives in `content/menu.ts` — but `menu-dish-card.tsx` reads this,
+     * so it stays here rather than being duplicated into the `menu` block.
+     */
     priceLabel: "SAR",
   },
   /**
@@ -79,9 +84,9 @@ const en = {
    * from these keys so the copy and the scroll ranges can never drift apart.
    */
   menu: {
-    eyebrow: "The card",
-    headline: ["Everything around", "the formula."],
-    lede: "The formula itself never changes. What sits either side of it does — a first course, a sweet, something cold while the second serving comes.",
+    eyebrow: "The cuts",
+    headline: ["Six cuts.", "One fire."],
+    lede: "Black Angus and Australian grass-fed, and Wagyu at two marble scores. Every one of them carved twice and sent out with the sauce, the salad and the frites.",
     cue: "Explore our menu",
     railLabel: "Menu",
     scenes: {
@@ -93,10 +98,14 @@ const en = {
       craft: { title: "Crafted With Precision", line: "Every detail matters." },
       card: { title: "The Menu", line: "Discover our signature dishes." },
     },
-    categoriesLabel: "Menu categories",
-    dietaryLabel: "Dietary notes",
-    included: "In the formula",
-    note: "Prices in Saudi riyals, inclusive of VAT.",
+    /**
+     * Read as `880 Cal / Pro 45g / Fat 75g`. English puts the unit after the
+     * calorie count and the label before the grams; Arabic wants the same
+     * order with its own words, so the three segments are assembled from
+     * labels rather than from one interpolated sentence.
+     */
+    macros: { calories: "Cal", protein: "Pro", fat: "Fat", gram: "g" },
+    note: "Prices in Saudi riyals. Calorie and macronutrient values are per serving and approximate.",
     cta: "Reserve a table",
   },
   branches: {
@@ -198,14 +207,14 @@ const ar: Dictionary = {
   dishes: {
     eyebrow: "الوصفة",
     headline: ["كل ما نقدّمه،", "بالترتيب الذي نقدّمه به."],
-    lede: "لا قائمة طعام تُقرأ. أنت تختار درجة نضج الأنتروكوت فحسب — وما تبقّى يصلك، مرّتين، دون أن تطلبه.",
+    lede: "الوصفة تصل بترتيب واحد، والأنتروكوت يصل مرّتين. أنت تختار درجة نضجه فحسب — وما تبقّى يأتيك دون أن تطلبه.",
     cta: "احجز طاولتك",
     priceLabel: "ر.س",
   },
   menu: {
-    eyebrow: "القائمة",
-    headline: ["كل ما يحيط", "بالوصفة."],
-    lede: "الوصفة نفسها لا تتغيّر. أمّا ما يسبقها وما يليها فيتبدّل — طبق أوّل، وحلوى، وشيء بارد تشربه ريثما تصل الدفعة الثانية.",
+    eyebrow: "القطعيات",
+    headline: ["ست قطع.", "نار واحدة."],
+    lede: "بلاك أنجوس، وأسترالي مُغذّى بالعشب، وواغيو بدرجتَي تعريق. كلّها تُشرَّح مرّتين وتصل مع الصلصة والسلطة والبطاطس.",
     cue: "استكشف القائمة",
     railLabel: "القائمة",
     scenes: {
@@ -217,10 +226,8 @@ const ar: Dictionary = {
       craft: { title: "صُنعت بإتقان", line: "كل تفصيل له حساب." },
       card: { title: "القائمة", line: "اكتشف أطباقنا المميّزة." },
     },
-    categoriesLabel: "أقسام القائمة",
-    dietaryLabel: "ملاحظات غذائية",
-    included: "ضمن الوصفة",
-    note: "الأسعار بالريال السعودي، شاملة ضريبة القيمة المضافة.",
+    macros: { calories: "سعرة", protein: "بروتين", fat: "دهون", gram: "غ" },
+    note: "الأسعار بالريال السعودي. قيم السعرات والعناصر الغذائية لكل حصة وتقريبية.",
     cta: "احجز طاولتك",
   },
   branches: {

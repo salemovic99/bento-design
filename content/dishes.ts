@@ -12,7 +12,14 @@ import dessert from "@/public/dishes/dessert.jpg";
 
 /* ────────────────────────────────────────────────────────────────────────────
    PLACEHOLDER DATA
-   Dish copy is written to the real house formula, but prices are stand-ins.
+   Dish copy is written to the real house formula.
+
+   PRICES: none. This section tells the story of the formula in the order it is
+   served; the priced card lives in `content/menu.ts` and is the only place a
+   number appears, so there is nothing to keep in sync between the two. The
+   `price` field stays on the type — `BentoCard` still renders it when set, and
+   the tiles may carry prices again.
+
    Three photographs (`salade-noix`, `frites`, `dessert`) are Unsplash
    placeholders — see `public/dishes/CREDITS.md`.
    ──────────────────────────────────────────────────────────────────────────── */
@@ -58,7 +65,7 @@ export const dishes: Dish[] = [
       ar: "قطع ريب آي فاخرة تُشرَّح عكس اتجاه الألياف وتُقدَّم على دفعتين، لتصلك الثانية ساخنة كالأولى تمامًا.",
     },
     tag: { en: "The main", ar: "الطبق الرئيسي" },
-    price: 189,
+    price: null,
     span: "col-span-2 row-span-2 md:col-span-6 md:row-span-2 lg:col-span-6 lg:row-span-2",
     focus: "50% 45%",
     sizes: "(min-width: 1024px) 50vw, (min-width: 768px) 100vw, 100vw",
@@ -93,7 +100,7 @@ export const dishes: Dish[] = [
       ar: "أوراق خضراء وجوز محمّص وصلصة خردل تُحضَّر عند الطلب. تأتي أولًا دائمًا، وليست خيارًا.",
     },
     tag: { en: "First course", ar: "الطبق الأول" },
-    price: 45,
+    price: null,
     span: "col-span-1 row-span-2 md:col-span-3 md:row-span-2 lg:col-span-3 lg:row-span-2",
     focus: "50% 50%",
     sizes: "(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 50vw",
@@ -128,7 +135,7 @@ export const dishes: Dish[] = [
       ar: "بروفيترول أو مرينغ مثلّج أو تلك الشوكولاتة التي تصل بلا اسم.",
     },
     tag: { en: "To finish", ar: "الختام" },
-    price: 52,
+    price: null,
     span: "col-span-2 row-span-1 md:col-span-6 md:row-span-1 lg:col-span-4 lg:row-span-1",
     focus: "50% 50%",
     sizes: "(min-width: 1024px) 34vw, 100vw",

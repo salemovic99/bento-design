@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useLanguage } from "@/lib/i18n/language-provider";
 import { Reveal } from "../reveal";
 import { SCENES } from "./menu-timeline";
-import { MenuCategories } from "./menu-categories";
+import { MenuList } from "./menu-list";
 
 import menuPoster from "@/public/videos/menu-poster.jpg";
 
@@ -60,7 +60,7 @@ export function MenuStill() {
       </div>
 
       <div className="mt-16 sm:mt-24 lg:mt-28">
-        <MenuCategories />
+        <MenuList />
       </div>
     </>
   );

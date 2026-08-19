@@ -5,7 +5,7 @@ import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import { useMediaQuery } from "@/lib/use-media-query";
 import { cn } from "@/lib/utils";
 import { CinematicMenuVideo } from "./cinematic-menu-video";
-import { MenuCategories } from "./menu-categories";
+import { MenuList } from "./menu-list";
 import { MenuProgress } from "./menu-progress";
 import { MenuStill } from "./menu-still";
 import { MenuTextScenes } from "./menu-text-scenes";
@@ -141,7 +141,7 @@ function MenuStage() {
         as the film starts to go, leaving it something to rise into.
       */}
       <div className="relative z-10 mt-[-100svh] pt-28 sm:pt-36 lg:pt-44">
-        <MenuCategories progress={smooth} />
+        <MenuList progress={smooth} />
       </div>
     </>
   );

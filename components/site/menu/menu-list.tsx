@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import {
   motion,
@@ -9,8 +8,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { itemsIn, menuCategories, type MenuCategoryId } from "@/content/menu";
+import { menuItems } from "@/content/menu";
 import { useLanguage } from "@/lib/i18n/language-provider";
 import { useBrandMotion, viewportOnce } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -20,7 +18,11 @@ import { MENU_INTRO } from "./menu-timeline";
 import { MenuDishCard } from "./menu-dish-card";
 
 /**
- * The real menu — the thing the film was introducing.
+ * The card itself — the thing the film was introducing.
+ *
+ * Six cuts, one list, no categories: the house serves one formula and a choice
+ * of cut, so a tab rail would be four labels invented to organise a list that
+ * is already short enough to read straight down.
  *
  * It takes an optional `progress`, and that optionality is the interesting
  * part. Inside the cinematic stage this block is pulled up a full viewport and
@@ -31,16 +33,15 @@ import { MenuDishCard } from "./menu-dish-card";
  * reduced-motion path — it falls back to `SectionHeading` and `Reveal` like
  * every other section on the page.
  */
-export function MenuCategories({
+export function MenuList({
   progress,
   className,
 }: {
   progress?: MotionValue<number>;
   className?: string;
 }) {
-  const { t, pick, lang } = useLanguage();
+  const { t, lang } = useLanguage();
   const m = useBrandMotion();
-  const [active, setActive] = useState<MenuCategoryId>("signature");
 
   // A constant stand-in so the hooks below run unconditionally in both paths.
   const settled = useMotionValue(1);
@@ -55,8 +56,6 @@ export function MenuCategories({
     [MENU_INTRO.start, MENU_INTRO.end],
     [40, 0],
   );
-
-  const openCategory = menuCategories.find((c) => c.id === active);
 
   return (
     <div
@@ -95,54 +94,18 @@ export function MenuCategories({
         />
       )}
 
-      {/* ── Categories ───────────────────────────────────────────────────── */}
-      <Tabs
-        value={active}
-        onValueChange={(value) => setActive(value as MenuCategoryId)}
-        // Manual activation: arrowing along the rail should let a keyboard
-        // guest read the category names without swapping the whole menu under
-        // them on every keypress.
-        activationMode="manual"
-        className="mt-12 sm:mt-16 lg:mt-20"
+      {/* ── The cuts ─────────────────────────────────────────────────────── */}
+      <motion.ul
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewportOnce}
+        variants={m.stagger(0.07)}
+        className="mt-12 divide-y divide-gold-600/12 border-b border-gold-600/12 sm:mt-16 lg:mt-20"
       >
-        <TabsList aria-label={t.menu.categoriesLabel}>
-          {menuCategories.map((category) => (
-            <TabsTrigger key={category.id} value={category.id}>
-              {pick(category.label)}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        {openCategory ? (
-          <p
-            key={openCategory.id}
-            className="mt-5 max-w-[52ch] text-[0.8125rem] font-light leading-[1.6] text-gold-200/60 sm:text-sm"
-          >
-            {pick(openCategory.note)}
-          </p>
-        ) : null}
-
-        {menuCategories.map((category) => (
-          <TabsContent key={category.id} value={category.id}>
-            {/*
-              Radix unmounts the inactive panel, so switching category mounts a
-              fresh list and the stagger replays — the crossfade comes for free,
-              on opacity and y only.
-            */}
-            <motion.ul
-              initial="hidden"
-              whileInView="visible"
-              viewport={viewportOnce}
-              variants={m.stagger(0.07)}
-              className="mt-2 divide-y divide-gold-600/12 border-b border-gold-600/12"
-            >
-              {itemsIn(category.id).map((item) => (
-                <MenuDishCard key={item.id} item={item} />
-              ))}
-            </motion.ul>
-          </TabsContent>
+        {menuItems.map((item) => (
+          <MenuDishCard key={item.id} item={item} />
         ))}
-      </Tabs>
+      </motion.ul>
 
       {/* ── Footnote + the one action ────────────────────────────────────── */}
       <Reveal className="mt-10 flex flex-col items-center gap-8 sm:mt-14">

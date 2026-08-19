@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { DIETARY, type MenuItem } from "@/content/menu";
+import type { MenuItem } from "@/content/menu";
 import { useLanguage } from "@/lib/i18n/language-provider";
 import { useBrandMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -18,8 +18,9 @@ import symbolGold from "@/public/brand/symbol-gold.png";
  * separated by hairlines drawn by the list, and the only enclosed shapes are
  * the photographs.
  *
- * `feature` items lead with a wide photograph above the row. One per category —
- * enough to set the register, few enough that the page stays a menu.
+ * The `feature` item leads with a wide photograph above the row. Exactly one,
+ * because the brand kit holds exactly one usable steak photograph — see the
+ * note at the top of `content/menu.ts`. The rest take the monogram tile.
  *
  * RTL: the grid mirrors itself. Every offset is logical (`ms-*`, `text-end`)
  * and the rule uses `origin-left rtl:origin-right`, so nothing is positioned
@@ -82,15 +83,9 @@ export function MenuDishCard({ item }: { item: MenuItem }) {
 
         {/* ── The line itself ──────────────────────────────────────────── */}
         <div className={cn("min-w-0", item.feature && "sm:col-span-2")}>
-          {item.kicker ? (
-            <p className="text-[0.5625rem] font-medium uppercase tracking-[0.2em] text-gold-600 sm:text-[0.625rem]">
-              {pick(item.kicker)}
-            </p>
-          ) : null}
-
           <h4
             className={cn(
-              "mt-1.5 font-medium leading-[1.15] tracking-[var(--track-tight)] text-white",
+              "font-medium leading-[1.15] tracking-[var(--track-tight)] text-white",
               item.feature
                 ? "text-[clamp(1.25rem,2.4vw,1.875rem)]"
                 : "text-[clamp(1.0625rem,1.4vw,1.3125rem)]",
@@ -103,50 +98,46 @@ export function MenuDishCard({ item }: { item: MenuItem }) {
             {pick(item.description)}
           </p>
 
-          {item.dietary?.length ? (
-            <ul className="mt-3 flex flex-wrap items-center gap-3">
-              {item.dietary.map((tag) => {
-                const { label, icon: Icon } = DIETARY[tag];
-                return (
-                  <li
-                    key={tag}
-                    className="inline-flex items-center gap-1.5 text-gold-600/85"
-                  >
-                    <Icon className="size-3.5 shrink-0" aria-hidden />
-                    {/*
-                      The glyph alone means nothing to a screen reader and a
-                      colour means nothing to anyone — the label always ships,
-                      visible from `sm` and read out at every width.
-                    */}
-                    <span className="text-[0.625rem] font-medium uppercase tracking-[0.16em] max-sm:sr-only">
-                      {pick(label)}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : null}
+          {/*
+            Calories are a legal requirement on a Saudi menu, not a flourish,
+            so they are set as data rather than as a caption: a dotted rule,
+            tabular figures, and `w-fit` so the rule measures the numbers
+            instead of running the width of the column.
+
+            The slashes are punctuation and are hidden from assistive tech —
+            "45 g slash" three times per cut is noise, and the labels already
+            say what each number is.
+          */}
+          <ul className="e-numeric mt-4 flex w-fit items-center gap-3 border-t border-dotted border-gold-600/25 pt-3 text-[0.625rem] font-medium uppercase tracking-[0.16em] text-gold-200/55 sm:gap-4">
+            <li>
+              {item.macros.calories} {t.menu.macros.calories}
+            </li>
+            <li aria-hidden className="opacity-30">
+              /
+            </li>
+            <li>
+              {t.menu.macros.protein} {item.macros.protein}
+              {t.menu.macros.gram}
+            </li>
+            <li aria-hidden className="opacity-30">
+              /
+            </li>
+            <li>
+              {t.menu.macros.fat} {item.macros.fat}
+              {t.menu.macros.gram}
+            </li>
+          </ul>
         </div>
 
         {/* ── Price ────────────────────────────────────────────────────── */}
-        <p
-          className={cn(
-            "col-start-2 row-start-1 shrink-0 pt-0.5 text-end sm:col-start-3",
-            item.feature && "sm:col-start-3",
-          )}
-        >
-          {item.price !== null ? (
-            <span className="e-numeric text-[0.9375rem] font-medium tracking-[0.06em] text-gold-200 sm:text-base">
-              {item.price}
-              <span className="ms-1.5 text-[0.75em] text-gold-600/85">
-                {t.dishes.priceLabel}
-              </span>
+        <p className="col-start-2 row-start-1 shrink-0 pt-0.5 text-end sm:col-start-3">
+          {/* Two decimals, as the house writes its prices. */}
+          <span className="e-numeric text-[0.9375rem] font-medium tracking-[0.06em] text-gold-200 sm:text-base">
+            {item.price.toFixed(2)}
+            <span className="ms-1.5 text-[0.75em] text-gold-600/85">
+              {t.dishes.priceLabel}
             </span>
-          ) : (
-            <span className="text-[0.5625rem] font-medium uppercase leading-[1.4] tracking-[0.16em] text-gold-600/80 sm:text-[0.625rem]">
-              {t.menu.included}
-            </span>
-          )}
+          </span>
         </p>
       </div>
     </motion.li>
