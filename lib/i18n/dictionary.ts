@@ -53,8 +53,7 @@ const en = {
   },
   hero: {
     eyebrow: "Riyadh · AlUla",
-    headline: ["One formula.", "Unchanged", "since 1930."],
-    lede: "A green salad with walnuts. Entrecôte carved twice. The sauce nobody has ever copied. Nothing else — because nothing else is needed.",
+    headline: ["One formula. Unchanged since 1930."],
     primaryCta: "Reserve a table",
     secondaryCta: "See the formula",
     scroll: "Scroll",
@@ -192,8 +191,7 @@ const ar: Dictionary = {
   },
   hero: {
     eyebrow: "الرياض · العُلا",
-    headline: ["وصفة واحدة.", "لم تتغيّر", "منذ ١٩٣٠."],
-    lede: "سلطة خضراء بالجوز. أنتروكوت يُقدَّم على مرّتين. وصلصة لم يستطع أحد تقليدها. لا شيء غير ذلك — لأن لا شيء غيره يلزم.",
+    headline: ["وصفة واحدة. لم تتغيّر منذ ١٩٣٠."],
     primaryCta: "احجز طاولتك",
     secondaryCta: "تعرّف على الوصفة",
     scroll: "مرِّر",

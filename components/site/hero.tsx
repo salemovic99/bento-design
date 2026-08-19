@@ -43,7 +43,12 @@ export function Hero() {
   return (
     <section
       ref={section}
-      className="on-green relative isolate flex min-h-dvh flex-col justify-end overflow-hidden bg-green-900 pb-14 pt-32 sm:pb-20 sm:pt-40 lg:pb-24 lg:pt-48"
+      /*
+        Centred rather than bottom-aligned. The padding stays asymmetric — the
+        fixed header occupies the top of the frame, so an evenly padded box
+        would read as sitting high; this lands the copy on the optical centre.
+      */
+      className="on-green relative isolate flex min-h-dvh flex-col justify-center overflow-hidden bg-green-900 pb-14 pt-32 sm:pb-20 sm:pt-40 lg:pb-24 lg:pt-48"
     >
       {/* ── The photograph ─────────────────────────────────────────────── */}
       <motion.div
@@ -90,7 +95,7 @@ export function Hero() {
           initial="hidden"
           animate="visible"
           variants={m.stagger(0.12, 0.5)}
-          className="max-w-3xl"
+          className="mx-auto max-w-4xl text-center"
         >
           <motion.p variants={m.fadeUp} className="e-eyebrow">
             {t.hero.eyebrow}
@@ -101,7 +106,7 @@ export function Hero() {
               <span key={index} className="block overflow-hidden pb-[0.08em]">
                 <motion.span
                   variants={m.lineReveal}
-                  className="e-display block text-white"
+                  className="e-display block text-balance text-white"
                 >
                   {line}
                 </motion.span>
@@ -109,16 +114,9 @@ export function Hero() {
             ))}
           </h1>
 
-          <motion.p
-            variants={m.fadeUp}
-            className="e-body-lg mt-6 max-w-xl text-balance text-gold-200/90 sm:mt-8"
-          >
-            {t.hero.lede}
-          </motion.p>
-
           <motion.div
             variants={m.fadeUp}
-            className="mt-9 flex flex-wrap items-center gap-3 sm:mt-11 sm:gap-4"
+            className="mt-9 flex flex-wrap items-center justify-center gap-3 sm:mt-11 sm:gap-4"
           >
             <Button asChild variant="gold" size="lg">
               <a href="#reservation">
