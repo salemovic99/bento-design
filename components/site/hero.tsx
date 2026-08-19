@@ -44,11 +44,12 @@ export function Hero() {
     <section
       ref={section}
       /*
-        Centred rather than bottom-aligned. The padding stays asymmetric — the
-        fixed header occupies the top of the frame, so an evenly padded box
-        would read as sitting high; this lands the copy on the optical centre.
+        Three bands, top to bottom: the padding the fixed header needs, the
+        copy centred in whatever is left, and the actions pinned to the foot.
+        The bottom padding carries both the buttons and the scroll cue beneath
+        them, so it is deeper than the visual gap suggests.
       */
-      className="on-green relative isolate flex min-h-dvh flex-col justify-center overflow-hidden bg-green-900 pb-14 pt-32 sm:pb-20 sm:pt-40 lg:pb-24 lg:pt-48"
+      className="on-green relative isolate flex min-h-dvh flex-col overflow-hidden bg-green-900 pb-24 pt-32 sm:pb-28 sm:pt-40 lg:pb-32 lg:pt-48"
     >
       {/* ── The photograph ─────────────────────────────────────────────── */}
       <motion.div
@@ -85,45 +86,79 @@ export function Hero() {
         style={still ? { opacity: 0 } : { opacity: dimOpacity }}
       />
 
-      {/* ── Copy ───────────────────────────────────────────────────────── */}
+      {/* ── Copy: centred in the space above the actions ─────────────────── */}
+      <motion.div
+        style={still ? undefined : { y: copyY, opacity: copyOpacity }}
+        className="flex flex-1 items-center"
+      >
+        <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10">
+          <motion.div
+            key={lang}
+            initial="hidden"
+            animate="visible"
+            variants={m.stagger(0.12, 0.5)}
+            className="text-center"
+          >
+            <motion.p variants={m.fadeUp} className="e-eyebrow">
+              {t.hero.eyebrow}
+            </motion.p>
+
+            {/*
+              A gap, not a margin. The photograph is the reason the section
+              exists and this is the one band of it left uncovered by type, so
+              it is sized to be seen rather than to separate two lines.
+            */}
+            <h1 className="mt-20 sm:mt-28 lg:mt-36">
+              {t.hero.headline.map((line, index) => (
+                <span key={index} className="block overflow-hidden pb-[0.08em]">
+                  <motion.span
+                    variants={m.lineReveal}
+                    /*
+                      The size follows the viewport rather than the type scale.
+                      A 34-character sentence cannot both wrap and stay on one
+                      line, so holding one line means the width dictates the
+                      size — `min()` lets it grow with the frame and stop at
+                      the top of the display scale. `e-display` still supplies
+                      the weight, leading, tracking and colour; only the size
+                      is overridden, and utilities outrank components in v4.
+                    */
+                    className="e-display block whitespace-nowrap text-[min(4.6vw,4.75rem)] text-white"
+                  >
+                    {line}
+                  </motion.span>
+                </span>
+              ))}
+            </h1>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* ── Actions: held at the foot of the section ─────────────────────── */}
       <motion.div
         style={still ? undefined : { y: copyY, opacity: copyOpacity }}
         className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10"
       >
+        {/*
+          Its own entrance rather than the copy's, since it no longer sits
+          inside that stagger — keyed on `lang` the same way, so a language
+          switch replays it as a cut along with everything else.
+        */}
         <motion.div
           key={lang}
           initial="hidden"
           animate="visible"
-          variants={m.stagger(0.12, 0.5)}
-          className="mx-auto max-w-4xl text-center"
+          variants={m.stagger(0.1, 0.95)}
+          className="flex flex-wrap items-center justify-center gap-3 sm:gap-4"
         >
-          <motion.p variants={m.fadeUp} className="e-eyebrow">
-            {t.hero.eyebrow}
-          </motion.p>
-
-          <h1 className="mt-5 sm:mt-7">
-            {t.hero.headline.map((line, index) => (
-              <span key={index} className="block overflow-hidden pb-[0.08em]">
-                <motion.span
-                  variants={m.lineReveal}
-                  className="e-display block text-balance text-white"
-                >
-                  {line}
-                </motion.span>
-              </span>
-            ))}
-          </h1>
-
-          <motion.div
-            variants={m.fadeUp}
-            className="mt-9 flex flex-wrap items-center justify-center gap-3 sm:mt-11 sm:gap-4"
-          >
+          <motion.div variants={m.fadeUp}>
             <Button asChild variant="gold" size="lg">
               <a href="#reservation">
                 {t.hero.primaryCta}
                 <ArrowUpRight className="rtl:-scale-x-100" />
               </a>
             </Button>
+          </motion.div>
+          <motion.div variants={m.fadeUp}>
             <Button asChild variant="outline" size="lg">
               <a href="#dishes">{t.hero.secondaryCta}</a>
             </Button>
