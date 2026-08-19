@@ -67,18 +67,20 @@ export const STORY_SCROLL_HEIGHT =
 /**
  * The vertical crop, panned across the scroll.
  *
- * The source is 720×1280. `object-cover` on a landscape viewport keeps the full
- * width and shows roughly the middle third of the height, and the film's
- * subjects do not sit at one height: the set table reads at 55%, the figure
- * past the mahogany column at 45%, the mural's face at 34% (at 50% it is cut at
- * the chin), and the etched mark at 59% (higher and "GENEVA" is clipped away).
+ * The source is 720×1280. Wherever it is shown in a box less tall than 16:9 —
+ * a landscape phone, a tablet, anything between `sm` and `lg` — `object-cover`
+ * keeps the full width and crops the height, and the film's subjects do not sit
+ * at one height: the set table reads at 55%, the figure past the mahogany
+ * column at 45%, the mural's face at 34% (at 50% it is cut at the chin), and
+ * the etched mark at 59% (higher and "GENEVA" is clipped away).
  *
  * So the crop lifts to find the face and settles back down onto the mark, which
  * reads as a camera rather than a slider, and holds at 59% through the release
- * so the last thing on screen is the house's own name. On a portrait phone the
- * source nearly fills the viewport, there is no overflow to move within, and
- * the percentage becomes a no-op — the pan disables itself where it is not
- * wanted, at no cost.
+ * so the last thing on screen is the house's own name.
+ *
+ * Where there is no overflow to move within — the `lg` panel, which is exactly
+ * 9:16, and a portrait phone, which is close to it — the percentage is a no-op.
+ * The pan disables itself wherever it is not wanted, at no cost.
  */
 export const STORY_PAN = {
   at: [0, 0.3, 0.55, 0.84, 1],

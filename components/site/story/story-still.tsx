@@ -15,11 +15,13 @@ import storyPoster from "@/public/videos/story-poster.jpg";
  * switched off. There is no scroll track, no sticky pin and — the part that
  * matters most — no `<video>` element at all, so the film is never even
  * requested. The four scene lines, which the film delivers one at a time, are
- * set here as what they always were underneath: a short stanza above the
- * timeline.
+ * set here as what they always were underneath: a short stanza beside the
+ * poster, above the timeline.
  *
- * The poster keeps its native 9:16 on a phone and is cropped to a letterbox
- * from `sm` up, which is the same crop the film gets when it plays.
+ * It holds the same shape the cinematic path resolves to at `lg` — portrait
+ * frame at the inline-start edge, copy in the column beside it — so the two
+ * paths read as the same section rather than two different ones. The poster
+ * keeps its native 9:16 throughout and is never stretched.
  */
 export function StoryStill() {
   const { t, lang } = useLanguage();
@@ -27,40 +29,38 @@ export function StoryStill() {
   return (
     <>
       <div className="mx-auto max-w-[1600px] px-4 pt-16 sm:px-6 sm:pt-20 lg:px-10 lg:pt-24">
-        <Reveal className="relative overflow-hidden rounded-[var(--radius-brand)]">
-          <div className="relative aspect-[4/5] sm:aspect-[16/9]">
-            <Image
-              src={storyPoster}
-              alt=""
-              fill
-              placeholder="blur"
-              sizes="(min-width: 1024px) 90vw, 100vw"
-              className="object-cover object-[50%_55%]"
-            />
-            <div
-              aria-hidden
-              className="absolute inset-0 bg-linear-to-t from-green-900/85 via-green-900/25 to-green-900/45"
-            />
-          </div>
-        </Reveal>
+        <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-center lg:gap-12 xl:gap-20">
+          <Reveal className="w-full max-w-sm shrink-0 lg:w-auto">
+            <div className="relative aspect-[9/16] overflow-hidden rounded-[var(--radius-brand)] border border-gold-600/15 lg:h-[min(72svh,40rem)] lg:w-auto">
+              <Image
+                src={storyPoster}
+                alt=""
+                fill
+                placeholder="blur"
+                sizes="(min-width: 1024px) 24rem, (min-width: 640px) 24rem, 100vw"
+                className="object-cover"
+              />
+            </div>
+          </Reveal>
 
-        <Reveal key={lang} className="mx-auto mt-12 max-w-2xl sm:mt-16">
-          <ul className="divide-y divide-gold-600/12">
-            {STORY_SCENES.map((scene) => {
-              const copy = t.story.scenes[scene.key];
-              return (
-                <li key={scene.key} className="py-5 sm:py-6">
-                  <h3 className="text-[clamp(1.125rem,1.8vw,1.5rem)] font-medium leading-[1.2] tracking-[var(--track-tight)] text-white">
-                    {copy.title}
-                  </h3>
-                  <p className="mt-1.5 text-[0.9375rem] font-light text-gold-200/70">
-                    {copy.line}
-                  </p>
-                </li>
-              );
-            })}
-          </ul>
-        </Reveal>
+          <Reveal key={lang} className="w-full max-w-2xl">
+            <ul className="divide-y divide-gold-600/12">
+              {STORY_SCENES.map((scene) => {
+                const copy = t.story.scenes[scene.key];
+                return (
+                  <li key={scene.key} className="py-5 sm:py-6">
+                    <h3 className="text-[clamp(1.125rem,1.8vw,1.5rem)] font-medium leading-[1.2] tracking-[var(--track-tight)] text-white">
+                      {copy.title}
+                    </h3>
+                    <p className="mt-1.5 text-[0.9375rem] font-light text-gold-200/70">
+                      {copy.line}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          </Reveal>
+        </div>
       </div>
 
       <div className="mt-16 sm:mt-24 lg:mt-28">

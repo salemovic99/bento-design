@@ -138,40 +138,84 @@ function StoryStage() {
           */
           className="e-film-pin pointer-events-none sticky top-0 h-svh overflow-hidden"
         >
-          <ScrollFilm
-            progress={progress}
-            smooth={smooth}
-            src={STORY_VIDEO_URL}
-            poster={STORY_POSTER_URL}
-            still={brandMural}
-            stillFocus="50% 45%"
-            scrubEnd={STORY_SCRUB_END}
-            release={STORY_RELEASE}
-            objectPosition={objectPosition}
-            /*
-              Tighter than the menu's default 150%. This section starts exactly
-              one viewport down, so a 150% margin would arm the film at scroll
-              zero and put a 2.8 MB fetch in competition with the hero's own
-              `priority` photograph. At 80% it cannot fire until the guest has
-              started moving, and it is still a full screen ahead of need.
-            */
-            armMargin="80% 0px"
-          />
+          {/*
+            Two compositions, one video element, switched entirely in CSS.
 
-          {/* Keeps the display type past 4.5:1 wherever the frame is bright. */}
-          <motion.div
-            style={{ opacity: vignetteOpacity }}
-            className="e-film-vignette absolute inset-0"
-          />
+            The film is 720×1280. Below `lg` it runs full-bleed, which on a
+            portrait phone is close to its native size and is the right frame
+            for it. From `lg` up, filling a landscape viewport would mean
+            stretching 720 px across 1920 — a 2.67× upscale, and it looks it.
+            So at `lg` the film moves into a panel at the inline-start edge,
+            sized so it renders at or below native width, and the copy runs
+            down the column beside it.
 
-          <FilmScenes
-            progress={smooth}
-            beats={STORY_SCENES}
-            copy={t.story.scenes}
-            cue={t.story.cue}
-            cueOut={STORY_CUE_OUT}
-            blur={wide}
-          />
+            Both boxes below use the same trick: `absolute inset-0` while the
+            layout is an overlay, `relative` once it becomes a column. Nothing
+            re-mounts across the breakpoint, so the film never reloads and the
+            scrub never resets.
+          */}
+          <div className="relative mx-auto flex h-full w-full max-w-[1600px] items-center lg:gap-12 lg:px-10 xl:gap-20">
+            <div
+              className={cn(
+                "absolute inset-0",
+                "lg:relative lg:inset-auto lg:aspect-[9/16] lg:h-[min(78svh,46rem)] lg:w-auto lg:shrink-0",
+                // The house treatment for a photograph — the same radius and
+                // hairline the timeline's own images carry.
+                "lg:overflow-hidden lg:rounded-[var(--radius-brand)] lg:border lg:border-gold-600/15",
+              )}
+            >
+              <ScrollFilm
+                progress={progress}
+                smooth={smooth}
+                src={STORY_VIDEO_URL}
+                poster={STORY_POSTER_URL}
+                still={brandMural}
+                stillFocus="50% 45%"
+                scrubEnd={STORY_SCRUB_END}
+                release={STORY_RELEASE}
+                objectPosition={objectPosition}
+                /*
+                  Tighter than the menu's default 150%. This section starts
+                  exactly one viewport down, so a 150% margin would arm the film
+                  at scroll zero and put a 4 MB fetch in competition with the
+                  hero's own `priority` photograph. At 80% it cannot fire until
+                  the guest has started moving, and it is still a full screen
+                  ahead of need.
+                */
+                armMargin="80% 0px"
+              />
+            </div>
+
+            {/*
+              Only the overlay needs a vignette. In the panel layout the copy
+              sits on the section's own dark ground, which already clears 4.5:1
+              without darkening the film.
+            */}
+            <motion.div
+              style={{ opacity: vignetteOpacity }}
+              className="e-film-vignette absolute inset-0 lg:hidden"
+            />
+
+            <div className="absolute inset-0 lg:relative lg:inset-auto lg:h-[min(78svh,46rem)] lg:flex-1">
+              <FilmScenes
+                progress={smooth}
+                beats={STORY_SCENES}
+                copy={t.story.scenes}
+                cue={t.story.cue}
+                cueOut={STORY_CUE_OUT}
+                blur={wide}
+                // `items-start`/`text-start` are logical: the panel sits at the
+                // inline-start edge, so the whole composition mirrors in Arabic
+                // with no `rtl:` variant and no JS.
+                sceneClassName="lg:items-start lg:px-0 lg:pe-12 lg:text-start"
+                // Smaller in a column than it can afford to be across a full
+                // frame — 6.4vw would run to 76px against a 400px panel.
+                titleClassName="lg:text-[clamp(2rem,3.2vw,3.25rem)]"
+                cueClassName="lg:justify-start lg:px-0"
+              />
+            </div>
+          </div>
+
           <FilmRail
             progress={progress}
             beats={STORY_SCENES}

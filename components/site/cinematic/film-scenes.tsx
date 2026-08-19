@@ -8,6 +8,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/language-provider";
+import { cn } from "@/lib/utils";
 import type { Beat, SceneCopy } from "./film-timeline";
 
 /**
@@ -32,11 +33,15 @@ function FilmScene({
   copy,
   progress,
   blur,
+  sceneClassName,
+  titleClassName,
 }: {
   beat: Beat;
   copy: SceneCopy;
   progress: MotionValue<number>;
   blur: boolean;
+  sceneClassName?: string;
+  titleClassName?: string;
 }) {
   const range = [beat.start, beat.peak, beat.hold, beat.end];
 
@@ -49,9 +54,18 @@ function FilmScene({
   return (
     <motion.div
       style={blur ? { opacity, y, scale, filter } : { opacity, y, scale }}
-      className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
+      className={cn(
+        "absolute inset-0 flex flex-col justify-center px-6",
+        "items-center text-center",
+        sceneClassName,
+      )}
     >
-      <h3 className="max-w-[16ch] text-[clamp(2.25rem,6.4vw,4.75rem)] font-normal leading-[1.02] tracking-[var(--track-tight)] text-white">
+      <h3
+        className={cn(
+          "max-w-[16ch] text-[clamp(2.25rem,6.4vw,4.75rem)] font-normal leading-[1.02] tracking-[var(--track-tight)] text-white",
+          titleClassName,
+        )}
+      >
         {copy.title}
       </h3>
       <span
@@ -72,6 +86,9 @@ export function FilmScenes({
   cue,
   cueOut,
   blur,
+  sceneClassName,
+  titleClassName,
+  cueClassName,
 }: {
   progress: MotionValue<number>;
   beats: readonly Beat[];
@@ -82,6 +99,16 @@ export function FilmScenes({
   cueOut: number;
   /** Blur is the one expensive property here — desktop only. */
   blur: boolean;
+  /**
+   * The three hooks a section needs to set its lines somewhere other than the
+   * middle of the frame. Default to the centred overlay the menu uses; the
+   * story overrides them at `lg`, where the film sits in a panel and the copy
+   * runs down the column beside it. Alignment is set with logical utilities
+   * (`text-start`, `items-start`) so it mirrors in Arabic on its own.
+   */
+  sceneClassName?: string;
+  titleClassName?: string;
+  cueClassName?: string;
 }) {
   const { lang } = useLanguage();
 
@@ -99,12 +126,18 @@ export function FilmScenes({
           copy={copy[beat.key]}
           progress={progress}
           blur={blur}
+          sceneClassName={sceneClassName}
+          titleClassName={titleClassName}
         />
       ))}
 
       <motion.div
         style={{ opacity: cueOpacity }}
-        className="absolute inset-x-0 bottom-7 flex justify-center sm:bottom-10"
+        className={cn(
+          "absolute inset-x-0 bottom-7 flex px-6 sm:bottom-10",
+          "justify-center",
+          cueClassName,
+        )}
       >
         <span className="flex items-center gap-2.5 text-center text-[0.625rem] font-medium uppercase tracking-[0.24em] text-gold-200/60">
           {cue}
