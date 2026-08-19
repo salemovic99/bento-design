@@ -72,6 +72,33 @@ const en = {
     cta: "Reserve a table",
     priceLabel: "SAR",
   },
+  /**
+   * The cinematic menu section. `scenes` is a keyed object rather than an array
+   * on purpose: `ar` is typed as `Dictionary`, so a keyed object makes a missing
+   * scene a compile error, and `SceneKey` in the section's timeline is derived
+   * from these keys so the copy and the scroll ranges can never drift apart.
+   */
+  menu: {
+    eyebrow: "The card",
+    headline: ["Everything around", "the formula."],
+    lede: "The formula itself never changes. What sits either side of it does — a first course, a sweet, something cold while the second serving comes.",
+    cue: "Explore our menu",
+    railLabel: "Menu",
+    scenes: {
+      intro: { title: "Our Menu", line: "A journey of flavour." },
+      ingredients: {
+        title: "Exceptional Ingredients",
+        line: "Selected with care.",
+      },
+      craft: { title: "Crafted With Precision", line: "Every detail matters." },
+      card: { title: "The Menu", line: "Discover our signature dishes." },
+    },
+    categoriesLabel: "Menu categories",
+    dietaryLabel: "Dietary notes",
+    included: "In the formula",
+    note: "Prices in Saudi riyals, inclusive of VAT.",
+    cta: "Reserve a table",
+  },
   branches: {
     eyebrow: "Where to find us",
     headline: ["Four rooms.", "The same table."],
@@ -174,6 +201,27 @@ const ar: Dictionary = {
     lede: "لا قائمة طعام تُقرأ. أنت تختار درجة نضج الأنتروكوت فحسب — وما تبقّى يصلك، مرّتين، دون أن تطلبه.",
     cta: "احجز طاولتك",
     priceLabel: "ر.س",
+  },
+  menu: {
+    eyebrow: "القائمة",
+    headline: ["كل ما يحيط", "بالوصفة."],
+    lede: "الوصفة نفسها لا تتغيّر. أمّا ما يسبقها وما يليها فيتبدّل — طبق أوّل، وحلوى، وشيء بارد تشربه ريثما تصل الدفعة الثانية.",
+    cue: "استكشف القائمة",
+    railLabel: "القائمة",
+    scenes: {
+      intro: { title: "قائمتنا", line: "رحلة في النكهة." },
+      ingredients: {
+        title: "مكوّنات استثنائية",
+        line: "مختارة بعناية.",
+      },
+      craft: { title: "صُنعت بإتقان", line: "كل تفصيل له حساب." },
+      card: { title: "القائمة", line: "اكتشف أطباقنا المميّزة." },
+    },
+    categoriesLabel: "أقسام القائمة",
+    dietaryLabel: "ملاحظات غذائية",
+    included: "ضمن الوصفة",
+    note: "الأسعار بالريال السعودي، شاملة ضريبة القيمة المضافة.",
+    cta: "احجز طاولتك",
   },
   branches: {
     eyebrow: "أين تجدنا",

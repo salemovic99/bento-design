@@ -239,6 +239,28 @@
     animation: e-fade-out 180ms var(--ease-brand) both;
   }
 
+  /**
+   * The fall-off over the menu film. A film frame is whatever the food happens
+   * to be doing, so the scene copy needs contrast it can rely on wherever the
+   * picture is bright — a radial that darkens the edges and a vertical that
+   * anchors the top and bottom. Deliberately not heavier than this: past about
+   * 55% the food stops reading, and the food is the point.
+   */
+  .e-film-vignette {
+    background:
+      radial-gradient(
+        120% 90% at 50% 45%,
+        transparent 20%,
+        rgb(0 22 20 / 0.55) 78%
+      ),
+      linear-gradient(
+        to bottom,
+        rgb(0 22 20 / 0.55),
+        rgb(0 22 20 / 0.2) 45%,
+        rgb(0 22 20 / 0.9)
+      );
+  }
+
   /* Prices, phone numbers and times never reflow while animating */
   .e-numeric {
     font-variant-numeric: tabular-nums;
@@ -281,6 +303,21 @@
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  /**
+   * A backstop for the cinematic menu, correct before hydration and with JS
+   * off. `MenuSection` swaps in a still composition that never mounts the
+   * video at all, but that decision only lands after hydration — these two
+   * rules make sure the section is never a 400vh scroll trap in the meantime.
+   */
+  .e-menu-track {
+    height: auto !important;
+  }
+
+  .e-menu-pin {
+    position: static !important;
+    height: auto !important;
   }
 
   *,
