@@ -8,7 +8,7 @@ import { Reservation } from "@/components/site/reservation";
 import { SectionTransition } from "@/components/site/section-transition";
 import { SignatureDishes } from "@/components/site/signature-dishes";
 import { SkipLink } from "@/components/site/skip-link";
-import { Story } from "@/components/site/story";
+import { StorySection } from "@/components/site/story/story-section";
 
 /**
  * One page, one continuous take:
@@ -22,13 +22,16 @@ import { Story } from "@/components/site/story";
  * arc runs dark → dark → dark → dark → cream → dark → dark, so the light
  * branches section still lands as a deliberate breath in the middle.
  *
- * The menu is the one section that pins: it holds the viewport for a few
- * screens while a film is scrubbed by the scroll, then releases into the menu
- * the film was introducing. That behaviour is sealed inside `<MenuSection>` —
- * everything above and below it scrolls normally.
+ * Two sections pin: the story and the menu. Each holds the viewport for a few
+ * screens while a film is scrubbed by the scroll, then releases into the thing
+ * the film was introducing — the heritage timeline, and the card. That
+ * behaviour is sealed inside `<StorySection>` and `<MenuSection>`, both built
+ * on `components/site/cinematic/`; everything around them scrolls normally.
  *
  * The story sits ahead of the food on purpose: the page claims a 1930 formula,
- * and the timeline is what earns that claim before the dishes trade on it.
+ * and the timeline is what earns that claim before the dishes trade on it. Its
+ * film ends on the house's own etched mark, which is what the timeline then
+ * explains.
  */
 export default function Home() {
   return (
@@ -39,7 +42,7 @@ export default function Home() {
         <div id="top" />
         <Hero />
         <SectionTransition from="green-900" to="green-900" />
-        <Story />
+        <StorySection />
         <SectionTransition from="green-900" to="green-900" />
         <SignatureDishes />
         <SectionTransition from="green-900" to="green-900" />

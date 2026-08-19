@@ -7,25 +7,19 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import {
   motion,
   useMotionValueEvent,
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { RELEASE, SCRUB_END, clamp01 } from "./menu-timeline";
-
-import steakMacro from "@/public/brand/steak-macro.jpg";
-
-/** Where the film lives. One file — see `public/videos/README.md`. */
-const MENU_VIDEO_URL = "/videos/menu.mp4";
-const MENU_POSTER_URL = "/videos/menu-poster.jpg";
+import { clamp01, type Release } from "./film-timeline";
 
 /** A seek smaller than one frame is invisible; skip it and save the work. */
 const MIN_SEEK_DELTA = 1 / 25;
 /**
- * Past this jump — a smooth-scrolled anchor crossing the whole section, say —
+ * Past this jump — a smooth-scrolled anchor crossing a whole section, say —
  * landing on the nearest keyframe instantly beats landing exactly a beat late.
  */
 const FAST_SEEK_DELTA = 1.25;
@@ -69,8 +63,36 @@ function useSaveData(): boolean {
   );
 }
 
+export type ScrollFilmProps = {
+  /** Raw scroll progress. Drives the seek. */
+  progress: MotionValue<number>;
+  /** Sprung scroll progress. Drives the picture's own scale. */
+  smooth: MotionValue<number>;
+  src: string;
+  poster: string;
+  /** Shown instead of the film under `saveData`, or if the file fails. */
+  still: StaticImageData;
+  /** `object-position` for that still. */
+  stillFocus?: string;
+  /** Progress at which the film reaches its final frame. */
+  scrubEnd: number;
+  release: Release;
+  /**
+   * `object-position` for the film itself. A MotionValue when the section pans
+   * the crop across the scroll — which is how a portrait source survives being
+   * cropped to a landscape viewport.
+   */
+  objectPosition?: MotionValue<string> | string;
+  /**
+   * How early the file is fetched, as an IntersectionObserver `rootMargin`.
+   * Sections near the top of the page want this tight so the fetch does not
+   * compete with the hero's own image; sections further down can be generous.
+   */
+  armMargin?: string;
+};
+
 /**
- * The film, scrubbed by scroll.
+ * A film, scrubbed by scroll.
  *
  * The entire mechanism is: scroll progress → `video.currentTime`. It is never
  * played. `play()` appears exactly once below, and only to work around iOS
@@ -83,18 +105,23 @@ function useSaveData(): boolean {
  * most one `currentTime` write happens per frame. Idle costs nothing.
  *
  * `progress` is the raw scroll value and drives the seek. `smooth` is sprung
- * and drives the picture's own scale and fade. Springing the seek instead would
+ * and drives the picture's own scale and crop. Springing the seek instead would
  * keep firing for a few hundred milliseconds after the guest stops — exactly
  * the seek thrash that stutters Safari — and would decouple the frame from the
  * finger, which is the one thing this effect cannot afford to lose.
  */
-export function CinematicMenuVideo({
+export function ScrollFilm({
   progress,
   smooth,
-}: {
-  progress: MotionValue<number>;
-  smooth: MotionValue<number>;
-}) {
+  src,
+  poster,
+  still,
+  stillFocus = "50% 45%",
+  scrubEnd,
+  release,
+  objectPosition,
+  armMargin = "150% 0px",
+}: ScrollFilmProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const durationRef = useRef(0);
@@ -105,14 +132,14 @@ export function CinematicMenuVideo({
   const [failed, setFailed] = useState(false);
   const [armed, setArmed] = useState(false);
   const saveData = useSaveData();
-  // Either reason lands on the same still: a decorative two megabytes is not
+  // Either reason lands on the same still: a decorative few megabytes is not
   // worth a metered connection, and a missing or broken file must not take the
   // section down with it.
   const showStill = failed || saveData;
 
   // The picture pulls back a touch as the section hands over, so the release
   // reads as a camera settling rather than a layer being switched off.
-  const scale = useTransform(smooth, [0, RELEASE.lift, 1], [1.06, 1.02, 1]);
+  const scale = useTransform(smooth, [0, release.lift, 1], [1.06, 1.02, 1]);
 
   const seek = useCallback(() => {
     frameRef.current = null;
@@ -155,12 +182,12 @@ export function CinematicMenuVideo({
 
     // A reload or a deep link can land mid-section; put the film on the right
     // frame rather than on frame 0.
-    targetRef.current = clamp01(progress.get() / SCRUB_END) * durationRef.current;
+    targetRef.current = clamp01(progress.get() / scrubEnd) * durationRef.current;
     seek();
-  }, [progress, seek]);
+  }, [progress, scrubEnd, seek]);
 
   useMotionValueEvent(progress, "change", (value) => {
-    targetRef.current = clamp01(value / SCRUB_END) * durationRef.current;
+    targetRef.current = clamp01(value / scrubEnd) * durationRef.current;
     if (frameRef.current === null) {
       frameRef.current = requestAnimationFrame(seek);
     }
@@ -183,15 +210,14 @@ export function CinematicMenuVideo({
   }, [armed, handleReady]);
 
   /**
-   * The `src` is withheld until the section is roughly a screen and a half
-   * away. Two things fall out of that, both worth having:
+   * The `src` is withheld until the section is close. Two things fall out of
+   * that, both worth having:
    *
-   * A guest who never scrolls this far never pays for the film at all — it sits
-   * below three full sections. And a guest who asked for reduced motion never
-   * requests it either: `useMediaQuery` can only answer honestly after
-   * hydration, so this component does briefly mount for them, but it mounts
-   * without a source and is replaced by the still long before anything is
-   * armed.
+   * A guest who never scrolls this far never pays for the film at all. And a
+   * guest who asked for reduced motion never requests it either: `useMediaQuery`
+   * can only answer honestly after hydration, so this component does briefly
+   * mount for them, but it mounts without a source and is replaced by the still
+   * long before anything is armed.
    */
   useEffect(() => {
     const node = wrapRef.current;
@@ -204,11 +230,11 @@ export function CinematicMenuVideo({
           observer.disconnect();
         }
       },
-      { rootMargin: "150% 0px" },
+      { rootMargin: armMargin },
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [armMargin]);
 
   return (
     <motion.div
@@ -219,30 +245,33 @@ export function CinematicMenuVideo({
     >
       {showStill ? (
         <Image
-          src={steakMacro}
+          src={still}
           alt=""
           fill
           priority={false}
           placeholder="blur"
           sizes="100vw"
-          className="object-cover object-[50%_45%]"
+          style={{ objectPosition: stillFocus }}
+          className="object-cover"
         />
       ) : (
         /*
-          Kept a plain <video> inside the motion wrapper on purpose: `motion.video`
-          would put framer in charge of the media element's own style, and the
-          transform belongs on a layer above it, where it stays a compositor job.
+          `motion.video` only because `object-position` has nowhere else to
+          live — it is a property of the media box itself. The scale transform
+          stays on the wrapper above, where it remains a compositor job and
+          framer is not handed control of the media element's own transform.
         */
-        <video
+        <motion.video
           ref={videoRef}
-          src={armed ? MENU_VIDEO_URL : undefined}
-          poster={MENU_POSTER_URL}
+          src={armed ? src : undefined}
+          poster={poster}
           muted
           playsInline
           preload="auto"
           tabIndex={-1}
           onLoadedMetadata={handleReady}
           onError={() => setFailed(true)}
+          style={objectPosition ? { objectPosition } : undefined}
           className="size-full object-cover"
         />
       )}

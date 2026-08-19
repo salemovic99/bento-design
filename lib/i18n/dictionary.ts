@@ -58,10 +58,37 @@ const en = {
     secondaryCta: "See the formula",
     scroll: "Scroll",
   },
+  /**
+   * The story. `eyebrow`, `headline`, `lede` and `cta` belong to the timeline
+   * the film releases into; `cue`, `railLabel` and `scenes` belong to the film
+   * itself. `scenes` is a keyed object rather than an array for the same reason
+   * the menu's is — see the note on that block below.
+   *
+   * The four film lines are deliberately atmospheric where the timeline is
+   * factual. The timeline already tells Geneva 1930, the sauce, the crossing
+   * and the four rooms; the film describes the room the guest is looking at,
+   * and its last line hands over rather than narrating the same beats twice.
+   */
   story: {
     eyebrow: "The house",
     headline: ["A recipe only ever", "passed by hand."],
     lede: "Four moments stand between a Geneva corner in 1930 and the table waiting for you tonight. Nothing in the formula changed along the way.",
+    cue: "The house, in four moments",
+    railLabel: "Story",
+    scenes: {
+      room: { title: "Before Service", line: "The room, an hour early." },
+      light: {
+        title: "Green Velvet, Low Light",
+        line: "Nothing in here is new.",
+      },
+      walls: {
+        title: "Paris on the Walls",
+        line: "The house has always looked like this.",
+      },
+      // Peaks exactly where the etched glass fills the frame, so the type on
+      // screen and the type in the photograph say the same thing at once.
+      mark: { title: "Geneva, Since 1930", line: "Four moments, in order." },
+    },
     cta: "See the formula",
   },
   dishes: {
@@ -200,6 +227,16 @@ const ar: Dictionary = {
     eyebrow: "الدار",
     headline: ["وصفة لم تنتقل", "إلا بين الأيدي."],
     lede: "أربع محطات تفصل بين ناصية في جنيف عام ١٩٣٠ والطاولة التي تنتظرك الليلة. ولم يتغيّر في الوصفة شيء على طول الطريق.",
+    cue: "الدار في أربع محطات",
+    railLabel: "الحكاية",
+    scenes: {
+      room: { title: "قبل الخدمة", line: "القاعة، قبل ساعة." },
+      light: { title: "مخمل أخضر وضوء خافت", line: "لا شيء هنا جديد." },
+      walls: { title: "باريس على الجدران", line: "هكذا كانت الدار دائمًا." },
+      // Arabic-Indic here, matching `content/story.ts` and the lede above:
+      // editorial copy takes ١٩٣٠, functional data stays Latin.
+      mark: { title: "جنيف، منذ ١٩٣٠", line: "أربع محطات، بالترتيب." },
+    },
     cta: "تعرّف على الوصفة",
   },
   dishes: {

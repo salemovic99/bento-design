@@ -3,10 +3,10 @@
 import Image from "next/image";
 import { useLanguage } from "@/lib/i18n/language-provider";
 import { Reveal } from "../reveal";
-import { MENU_SCENES } from "./menu-timeline";
-import { MenuList } from "./menu-list";
+import { StoryMilestones } from "./story-milestones";
+import { STORY_SCENES } from "./story-timeline";
 
-import menuPoster from "@/public/videos/menu-poster.jpg";
+import storyPoster from "@/public/videos/story-poster.jpg";
 
 /**
  * The section as it renders for a guest who has asked for reduced motion.
@@ -15,9 +15,13 @@ import menuPoster from "@/public/videos/menu-poster.jpg";
  * switched off. There is no scroll track, no sticky pin and — the part that
  * matters most — no `<video>` element at all, so the film is never even
  * requested. The four scene lines, which the film delivers one at a time, are
- * set here as what they always were underneath: a short stanza above the menu.
+ * set here as what they always were underneath: a short stanza above the
+ * timeline.
+ *
+ * The poster keeps its native 9:16 on a phone and is cropped to a letterbox
+ * from `sm` up, which is the same crop the film gets when it plays.
  */
-export function MenuStill() {
+export function StoryStill() {
   const { t, lang } = useLanguage();
 
   return (
@@ -26,12 +30,12 @@ export function MenuStill() {
         <Reveal className="relative overflow-hidden rounded-[var(--radius-brand)]">
           <div className="relative aspect-[4/5] sm:aspect-[16/9]">
             <Image
-              src={menuPoster}
+              src={storyPoster}
               alt=""
               fill
               placeholder="blur"
               sizes="(min-width: 1024px) 90vw, 100vw"
-              className="object-cover"
+              className="object-cover object-[50%_55%]"
             />
             <div
               aria-hidden
@@ -42,8 +46,8 @@ export function MenuStill() {
 
         <Reveal key={lang} className="mx-auto mt-12 max-w-2xl sm:mt-16">
           <ul className="divide-y divide-gold-600/12">
-            {MENU_SCENES.map((scene) => {
-              const copy = t.menu.scenes[scene.key];
+            {STORY_SCENES.map((scene) => {
+              const copy = t.story.scenes[scene.key];
               return (
                 <li key={scene.key} className="py-5 sm:py-6">
                   <h3 className="text-[clamp(1.125rem,1.8vw,1.5rem)] font-medium leading-[1.2] tracking-[var(--track-tight)] text-white">
@@ -60,7 +64,7 @@ export function MenuStill() {
       </div>
 
       <div className="mt-16 sm:mt-24 lg:mt-28">
-        <MenuList />
+        <StoryMilestones />
       </div>
     </>
   );

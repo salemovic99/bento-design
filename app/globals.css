@@ -306,16 +306,17 @@
   }
 
   /**
-   * A backstop for the cinematic menu, correct before hydration and with JS
-   * off. `MenuSection` swaps in a still composition that never mounts the
-   * video at all, but that decision only lands after hydration — these two
-   * rules make sure the section is never a 400vh scroll trap in the meantime.
+   * A backstop for both cinematic sections — the story and the menu — correct
+   * before hydration and with JS off. Each swaps in a still composition that
+   * never mounts a video at all, but that decision only lands after hydration;
+   * these two rules make sure neither section is a several-hundred-vh scroll
+   * trap in the meantime.
    */
-  .e-menu-track {
+  .e-film-track {
     height: auto !important;
   }
 
-  .e-menu-pin {
+  .e-film-pin {
     position: static !important;
     height: auto !important;
   }

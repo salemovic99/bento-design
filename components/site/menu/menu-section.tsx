@@ -2,19 +2,31 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
+import { useLanguage } from "@/lib/i18n/language-provider";
 import { useMediaQuery } from "@/lib/use-media-query";
 import { cn } from "@/lib/utils";
-import { CinematicMenuVideo } from "./cinematic-menu-video";
+import { FilmRail } from "../cinematic/film-rail";
+import { FilmScenes } from "../cinematic/film-scenes";
+import { ScrollFilm } from "../cinematic/scroll-film";
 import { MenuList } from "./menu-list";
-import { MenuProgress } from "./menu-progress";
 import { MenuStill } from "./menu-still";
-import { MenuTextScenes } from "./menu-text-scenes";
-import { MENU_SCROLL_HEIGHT, RELEASE } from "./menu-timeline";
+import {
+  MENU_CUE_OUT,
+  MENU_POSTER_URL,
+  MENU_RELEASE,
+  MENU_SCENES,
+  MENU_SCROLL_HEIGHT,
+  MENU_SCRUB_END,
+  MENU_VIDEO_URL,
+} from "./menu-timeline";
+
+import steakMacro from "@/public/brand/steak-macro.jpg";
 
 /**
  * The cinematic menu.
  *
- * This is the one section on the page that pins. Everything else — hero, story,
+ * One of two sections on the page that pin — the other is the story, which uses
+ * the same machinery in `components/site/cinematic/`. Everything else — hero,
  * bento, branches, reservation — scrolls normally, and nothing here reaches
  * outside the `<section>` to change that. The pin lives on a child of a fixed
  * scroll track, so the page's own scrolling is untouched; the guest simply
@@ -23,7 +35,7 @@ import { MENU_SCROLL_HEIGHT, RELEASE } from "./menu-timeline";
  * The structure that makes the ending work:
  *
  *   section
- *   ├── track        400vh of scroll (260vh on a phone), z-20
+ *   ├── track        420vh of scroll (260vh on a phone), z-20
  *   │   └── pin      sticky, one viewport tall — film, scenes, rail
  *   └── menu         the real menu, z-10, pulled up by exactly one viewport
  *
@@ -53,6 +65,7 @@ export function MenuSection() {
  */
 function MenuStage() {
   const track = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
 
   // "start start" → "end end" maps onto exactly the pinned travel: 0 when the
   // track's top reaches the viewport top and the pin engages, 1 when its bottom
@@ -65,7 +78,7 @@ function MenuStage() {
     offset: ["start start", "end end"],
   });
 
-  // Sprung for the look, raw for the seek — see `cinematic-menu-video.tsx`.
+  // Sprung for the look, raw for the seek — see `cinematic/scroll-film.tsx`.
   const smooth = useSpring(progress, {
     stiffness: 140,
     damping: 30,
@@ -78,17 +91,17 @@ function MenuStage() {
 
   const stageOpacity = useTransform(
     smooth,
-    [RELEASE.dissolve, RELEASE.done],
+    [MENU_RELEASE.dissolve, MENU_RELEASE.done],
     [1, 0],
   );
   // Once released, stop compositing a full-screen video layer behind the whole
   // remaining scroll of the menu.
   const stageVisibility = useTransform(smooth, (value) =>
-    value > RELEASE.done ? "hidden" : "visible",
+    value > MENU_RELEASE.done ? "hidden" : "visible",
   );
   const vignetteOpacity = useTransform(
     smooth,
-    [0, RELEASE.lift, RELEASE.dissolve],
+    [0, MENU_RELEASE.lift, MENU_RELEASE.dissolve],
     [1, 1, 0.35],
   );
 
@@ -103,7 +116,7 @@ function MenuStage() {
           box. Nothing in here is interactive, so nothing is lost.
         */
         className={cn(
-          "e-menu-track pointer-events-none relative z-20",
+          "e-film-track pointer-events-none relative z-20",
           MENU_SCROLL_HEIGHT,
           "h-(--menu-scroll)",
         )}
@@ -119,9 +132,18 @@ function MenuStage() {
             where it cannot be seen. Change one of these and you must change the
             other.
           */
-          className="e-menu-pin pointer-events-none sticky top-0 h-svh overflow-hidden"
+          className="e-film-pin pointer-events-none sticky top-0 h-svh overflow-hidden"
         >
-          <CinematicMenuVideo progress={progress} smooth={smooth} />
+          <ScrollFilm
+            progress={progress}
+            smooth={smooth}
+            src={MENU_VIDEO_URL}
+            poster={MENU_POSTER_URL}
+            still={steakMacro}
+            stillFocus="50% 45%"
+            scrubEnd={MENU_SCRUB_END}
+            release={MENU_RELEASE}
+          />
 
           {/* Keeps the display type past 4.5:1 wherever the frame is bright. */}
           <motion.div
@@ -129,8 +151,20 @@ function MenuStage() {
             className="e-film-vignette absolute inset-0"
           />
 
-          <MenuTextScenes progress={smooth} blur={wide} />
-          <MenuProgress progress={progress} />
+          <FilmScenes
+            progress={smooth}
+            beats={MENU_SCENES}
+            copy={t.menu.scenes}
+            cue={t.menu.cue}
+            cueOut={MENU_CUE_OUT}
+            blur={wide}
+          />
+          <FilmRail
+            progress={progress}
+            beats={MENU_SCENES}
+            label={t.menu.railLabel}
+            release={MENU_RELEASE}
+          />
         </motion.div>
       </div>
 

@@ -8,44 +8,43 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/language-provider";
-import { CUE_OUT, SCENES, type Scene } from "./menu-timeline";
+import type { Beat, SceneCopy } from "./film-timeline";
 
 /**
- * The four lines the film is cut around, each fading up and away on its own
- * stretch of the scroll.
+ * The lines a film is cut around, each fading up and away on its own stretch of
+ * the scroll.
  *
  * Every scene owns its own hooks rather than being mapped over inline — a
- * `useTransform` inside `SCENES.map()` would be a hook in a loop. The shared
+ * `useTransform` inside `beats.map()` would be a hook in a loop. The shared
  * scroll value is passed in, so this stays a pure read: no state, no renders.
  *
  * Only opacity, y, scale and blur move. Nothing travels on the horizontal axis,
  * per the rule in `lib/motion.ts` — the composition is centred, so it needs no
  * mirroring in Arabic at all.
  *
- * The whole stage is `aria-hidden` (set by the parent). These four lines are
- * decorative repetition over a film; the section's real heading is the `<h2>`
- * in `MenuCategories`, and four floating headings in the a11y tree would be
- * read out of sequence and out of context.
+ * The whole stage is `aria-hidden` (set by the parent). These lines are
+ * decorative repetition over a film; the section's real heading is the `<h2>` in
+ * the content it releases into, and a handful of floating headings in the a11y
+ * tree would be read out of sequence and out of context.
  */
-function MenuScene({
-  scene,
+function FilmScene({
+  beat,
+  copy,
   progress,
   blur,
 }: {
-  scene: Scene;
+  beat: Beat;
+  copy: SceneCopy;
   progress: MotionValue<number>;
   blur: boolean;
 }) {
-  const { t } = useLanguage();
-  const range = [scene.start, scene.peak, scene.hold, scene.end];
+  const range = [beat.start, beat.peak, beat.hold, beat.end];
 
   const opacity = useTransform(progress, range, [0, 1, 1, 0]);
   const y = useTransform(progress, range, [28, 0, 0, -28]);
   const scale = useTransform(progress, range, [1.05, 1, 1, 0.985]);
   const blurPx = useTransform(progress, range, [12, 0, 0, 7]);
   const filter = useMotionTemplate`blur(${blurPx}px)`;
-
-  const copy = t.menu.scenes[scene.key];
 
   return (
     <motion.div
@@ -66,28 +65,38 @@ function MenuScene({
   );
 }
 
-export function MenuTextScenes({
+export function FilmScenes({
   progress,
+  beats,
+  copy,
+  cue,
+  cueOut,
   blur,
 }: {
   progress: MotionValue<number>;
+  beats: readonly Beat[];
+  /** Keyed by `Beat.key`, so a beat can never exist without its copy. */
+  copy: Record<string, SceneCopy>;
+  cue: string;
+  /** Progress at which the cue is gone — it has said what it needed to. */
+  cueOut: number;
   /** Blur is the one expensive property here — desktop only. */
   blur: boolean;
 }) {
-  const { lang, t } = useLanguage();
+  const { lang } = useLanguage();
 
-  // The cue goes as soon as the guest moves; it has said what it needed to.
-  const cueOpacity = useTransform(progress, [0, CUE_OUT], [1, 0]);
+  const cueOpacity = useTransform(progress, [0, cueOut], [1, 0]);
 
   return (
     // Keyed on language so a switch mid-section reads as a cut rather than a
     // text swap — the same treatment `SectionHeading` gives every other heading.
     // The values are derived from scroll, so the remount costs nothing.
     <div key={lang} className="pointer-events-none absolute inset-0">
-      {SCENES.map((scene) => (
-        <MenuScene
-          key={scene.key}
-          scene={scene}
+      {beats.map((beat) => (
+        <FilmScene
+          key={beat.key}
+          beat={beat}
+          copy={copy[beat.key]}
           progress={progress}
           blur={blur}
         />
@@ -97,8 +106,8 @@ export function MenuTextScenes({
         style={{ opacity: cueOpacity }}
         className="absolute inset-x-0 bottom-7 flex justify-center sm:bottom-10"
       >
-        <span className="flex items-center gap-2.5 text-[0.625rem] font-medium uppercase tracking-[0.24em] text-gold-200/60">
-          {t.menu.cue}
+        <span className="flex items-center gap-2.5 text-center text-[0.625rem] font-medium uppercase tracking-[0.24em] text-gold-200/60">
+          {cue}
           <motion.span
             animate={{ y: [0, 5, 0] }}
             transition={{ duration: 2.4, ease: "easeInOut", repeat: Infinity }}
