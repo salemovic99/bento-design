@@ -19,6 +19,7 @@ import { StoryMilestones } from "./story-milestones";
 import {
   STORY_CUE_OUT,
   STORY_PAN,
+  STORY_PANEL_HEIGHT,
   STORY_POSTER_URL,
   STORY_RELEASE,
   STORY_SCENES,
@@ -145,9 +146,10 @@ function StoryStage() {
             portrait phone is close to its native size and is the right frame
             for it. From `lg` up, filling a landscape viewport would mean
             stretching 720 px across 1920 — a 2.67× upscale, and it looks it.
-            So at `lg` the film moves into a panel at the inline-start edge,
-            sized so it renders at or below native width, and the copy runs
-            down the column beside it.
+            So at `lg` the film moves into a panel taking half the row, and the
+            copy runs down the column beside it. Half of the 1600 px-capped
+            container is ~760 px against a 720 px source: a 1.06× upscale at the
+            widest, and a downscale on anything narrower than a 1600 px frame.
 
             Both boxes below use the same trick: `absolute inset-0` while the
             layout is an overlay, `relative` once it becomes a column. Nothing
@@ -158,18 +160,28 @@ function StoryStage() {
             <div
               className={cn(
                 "absolute inset-0",
-                "lg:relative lg:inset-auto lg:aspect-[9/16] lg:h-[min(78svh,46rem)] lg:w-auto lg:shrink-0",
                 /*
-                  Set in from the edge rather than against it, so the panel
-                  lands about halfway between the frame edge and the centre and
-                  reads as placed rather than as pushed up against the margin.
-                  A percentage, not a `vw`: it resolves against the container's
-                  content box, which is capped at 1600px, so the panel keeps its
-                  relationship to the copy beside it instead of drifting further
-                  right the wider the screen gets. `ms-` is logical — in Arabic
-                  the whole composition mirrors and the inset moves with it.
+                  Half the row, and no aspect lock: at this width holding the
+                  source's 9:16 would make the panel 1350 px tall, far past the
+                  viewport. So height is set independently and the picture is
+                  cropped to fit — which is what `STORY_PAN` is for, and why it
+                  now does real work at `lg` rather than none.
                 */
-                "lg:ms-[7%]",
+                "lg:relative lg:inset-auto lg:w-1/2 lg:shrink-0",
+                STORY_PANEL_HEIGHT,
+                /*
+                  Still set in from the edge rather than against it, so the
+                  panel reads as placed rather than as pushed up against the
+                  margin — but a much smaller inset than the narrow panel
+                  carried, because at half the row anything more starts eating
+                  the copy column. A percentage, not a `vw`: it resolves against
+                  the container's content box, which is capped at 1600px, so the
+                  panel keeps its relationship to the copy beside it instead of
+                  drifting further right the wider the screen gets. `ms-` is
+                  logical — in Arabic the whole composition mirrors and the
+                  inset moves with it.
+                */
+                "lg:ms-[3%]",
                 // The house treatment for a photograph — the same radius and
                 // hairline the timeline's own images carry.
                 "lg:overflow-hidden lg:rounded-[var(--radius-brand)] lg:border lg:border-gold-600/15",
@@ -207,7 +219,12 @@ function StoryStage() {
               className="e-film-vignette absolute inset-0 lg:hidden"
             />
 
-            <div className="absolute inset-0 lg:relative lg:inset-auto lg:h-[min(78svh,46rem)] lg:flex-1">
+            <div
+              className={cn(
+                "absolute inset-0 lg:relative lg:inset-auto lg:flex-1",
+                STORY_PANEL_HEIGHT,
+              )}
+            >
               <FilmScenes
                 progress={smooth}
                 beats={STORY_SCENES}

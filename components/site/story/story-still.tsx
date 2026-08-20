@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { useLanguage } from "@/lib/i18n/language-provider";
+import { cn } from "@/lib/utils";
 import { Reveal } from "../reveal";
 import { StoryMilestones } from "./story-milestones";
-import { STORY_SCENES } from "./story-timeline";
+import { STORY_PANEL_HEIGHT, STORY_SCENES } from "./story-timeline";
 
 import storyPoster from "@/public/videos/story-poster.jpg";
 
@@ -18,10 +19,11 @@ import storyPoster from "@/public/videos/story-poster.jpg";
  * set here as what they always were underneath: a short stanza beside the
  * poster, above the timeline.
  *
- * It holds the same shape the cinematic path resolves to at `lg` — portrait
- * frame at the inline-start edge, copy in the column beside it — so the two
- * paths read as the same section rather than two different ones. The poster
- * keeps its native 9:16 throughout and is never stretched.
+ * It holds the same shape the cinematic path resolves to at `lg` — the frame
+ * taking half the row at the inline-start edge, copy in the column beside it —
+ * so the two paths read as the same section rather than two different ones.
+ * Below `lg` the poster keeps the source's native 9:16; at `lg` it takes the
+ * panel's height and is cropped to it, never stretched.
  */
 export function StoryStill() {
   const { t, lang } = useLanguage();
@@ -30,15 +32,24 @@ export function StoryStill() {
     <>
       <div className="mx-auto max-w-[1600px] px-4 pt-16 sm:px-6 sm:pt-20 lg:px-10 lg:pt-24">
         <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-center lg:gap-12 xl:gap-20">
-          <Reveal className="w-full max-w-sm shrink-0 lg:w-auto">
-            <div className="relative aspect-[9/16] overflow-hidden rounded-[var(--radius-brand)] border border-gold-600/15 lg:h-[min(72svh,40rem)] lg:w-auto">
+          <Reveal className="w-full max-w-sm shrink-0 lg:w-1/2 lg:max-w-none">
+            <div
+              className={cn(
+                "relative aspect-[9/16] overflow-hidden rounded-[var(--radius-brand)] border border-gold-600/15 lg:aspect-auto",
+                STORY_PANEL_HEIGHT,
+              )}
+            >
               <Image
                 src={storyPoster}
                 alt=""
                 fill
                 placeholder="blur"
-                sizes="(min-width: 1024px) 24rem, (min-width: 640px) 24rem, 100vw"
-                className="object-cover"
+                sizes="(min-width: 1024px) 50vw, 24rem"
+                // 45% rather than centre: at `lg` the frame is wider than the
+                // source's 9:16 and crops the height, and the middle of this
+                // first frame is table linen. See `STORY_PAN`, which is the
+                // same decision made across the whole film.
+                className="object-cover object-[50%_45%]"
               />
             </div>
           </Reveal>
