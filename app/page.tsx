@@ -22,16 +22,13 @@ import { StorySection } from "@/components/site/story/story-section";
  * arc runs dark → dark → dark → dark → cream → dark → dark, so the light
  * branches section still lands as a deliberate breath in the middle.
  *
- * Two sections pin: the story and the menu. Each holds the viewport for a few
- * screens while a film is scrubbed by the scroll, then releases into the thing
- * the film was introducing — the heritage timeline, and the card. That
- * behaviour is sealed inside `<StorySection>` and `<MenuSection>`, both built
- * on `components/site/cinematic/`; everything around them scrolls normally.
+ * One section pins: the menu. It holds the viewport for a few screens while a
+ * film is scrubbed by the scroll, then releases into the card the film was
+ * introducing. That behaviour is sealed inside `<MenuSection>`, built on
+ * `components/site/cinematic/`; everything around it scrolls normally.
  *
  * The story sits ahead of the food on purpose: the page claims a 1930 formula,
- * and the timeline is what earns that claim before the dishes trade on it. Its
- * film ends on the house's own etched mark, which is what the timeline then
- * explains.
+ * and the timeline is what earns that claim before the dishes trade on it.
  */
 export default function Home() {
   return (

@@ -1,56 +1,33 @@
 "use client";
 
-import { useRef } from "react";
-import {
-  motion,
-  useMotionTemplate,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "framer-motion";
+import Image from "next/image";
 import { useLanguage } from "@/lib/i18n/language-provider";
-import { useMediaQuery } from "@/lib/use-media-query";
 import { cn } from "@/lib/utils";
-import { FilmRail } from "../cinematic/film-rail";
-import { FilmScenes } from "../cinematic/film-scenes";
-import { ScrollFilm } from "../cinematic/scroll-film";
-import { StoryStill } from "./story-still";
+import { Reveal } from "../reveal";
 import { StoryMilestones } from "./story-milestones";
-import {
-  STORY_CUE_OUT,
-  STORY_PAN,
-  STORY_PANEL_HEIGHT,
-  STORY_POSTER_URL,
-  STORY_RELEASE,
-  STORY_SCENES,
-  STORY_SCROLL_HEIGHT,
-  STORY_SCRUB_END,
-  STORY_VIDEO_URL,
-} from "./story-timeline";
+import { STORY_PANEL_HEIGHT, STORY_SCENES } from "./story-timeline";
 
-import brandMural from "@/public/brand/brand-mural.jpg";
+import storyPoster from "@/public/videos/story-poster.jpg";
 
 /**
- * The cinematic story.
+ * The story.
  *
- * One of two sections on the page that pin — the other is the menu, which uses
- * the same machinery in `components/site/cinematic/`. Everything else scrolls
- * normally, and nothing here reaches outside the `<section>` to change that.
+ * A still composition — there is no `<video>` here, no scroll track and no
+ * sticky pin, so nothing in this section pins and nothing is fetched beyond the
+ * one photograph. The menu is now the only section on the page that pins, on
+ * the machinery in `components/site/cinematic/`.
  *
  *   section
- *   ├── track       360vh of scroll (220vh on a phone), z-20
- *   │   └── pin     sticky, one viewport tall — film, scenes, rail
- *   └── timeline    the four heritage beats, z-10, pulled up one viewport
+ *   ├── frame + stanza   the house photograph, the four scene lines beside it
+ *   └── timeline         the four heritage beats
  *
- * Because the timeline is lifted a full viewport, it has already risen into
- * place behind the film by the time the film starts dissolving. The stage does
- * not cut away to reveal it; it thins out and the timeline is simply there —
- * and the film's last frame, the house's own etched mark, dissolves straight
- * into the timeline that explains it. That is also why nothing in the pin is
- * interactive and the whole thing is `pointer-events-none`.
+ * Below `lg` the frame keeps the source's native 9:16 and the stanza sits under
+ * it; at `lg` the frame takes half the row at the inline-start edge, is cropped
+ * to the panel height rather than stretched, and the copy runs down the column
+ * beside it.
  */
 export function StorySection() {
-  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const { t, lang } = useLanguage();
 
   return (
     <section
@@ -61,207 +38,53 @@ export function StorySection() {
         aria-hidden
         className="e-lattice pointer-events-none absolute inset-0 -z-10 opacity-[0.035]"
       />
-      {reducedMotion ? <StoryStill /> : <StoryStage />}
+
+      <div className="mx-auto max-w-[1600px] px-4 pt-16 sm:px-6 sm:pt-20 lg:px-10 lg:pt-24">
+        <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-center lg:gap-12 xl:gap-20">
+          <Reveal className="w-full max-w-sm shrink-0 lg:w-1/2 lg:max-w-none">
+            <div
+              className={cn(
+                "relative aspect-[9/16] overflow-hidden rounded-[var(--radius-brand)] border border-gold-600/15 lg:aspect-auto",
+                STORY_PANEL_HEIGHT,
+              )}
+            >
+              <Image
+                src={storyPoster}
+                alt=""
+                fill
+                placeholder="blur"
+                sizes="(min-width: 1024px) 50vw, 24rem"
+                // 45% rather than centre: at `lg` the frame is wider than the
+                // source's 9:16 and crops the height, and the middle of the
+                // picture is table linen.
+                className="object-cover object-[50%_45%]"
+              />
+            </div>
+          </Reveal>
+
+          <Reveal key={lang} className="w-full max-w-2xl">
+            <ul className="divide-y divide-gold-600/12">
+              {STORY_SCENES.map((key) => {
+                const copy = t.story.scenes[key];
+                return (
+                  <li key={key} className="py-5 sm:py-6">
+                    <h3 className="text-[clamp(1.125rem,1.8vw,1.5rem)] font-medium leading-[1.2] tracking-[var(--track-tight)] text-white">
+                      {copy.title}
+                    </h3>
+                    <p className="mt-1.5 text-[0.9375rem] font-light text-gold-200/70">
+                      {copy.line}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          </Reveal>
+        </div>
+      </div>
+
+      <div className="mt-16 sm:mt-24 lg:mt-28">
+        <StoryMilestones />
+      </div>
     </section>
-  );
-}
-
-/**
- * The scroll-driven half. Split out rather than early-returned so that every
- * hook below — and the `useMotionValueEvent` calls further down the tree — is
- * unconditional by construction.
- */
-function StoryStage() {
-  const track = useRef<HTMLDivElement>(null);
-  const { t } = useLanguage();
-
-  // "start start" → "end end" maps onto exactly the pinned travel: 0 when the
-  // pin engages, 1 when it lets go.
-  const { scrollYProgress: progress } = useScroll({
-    target: track,
-    offset: ["start start", "end end"],
-  });
-
-  // Sprung for the look, raw for the seek — see `cinematic/scroll-film.tsx`.
-  const smooth = useSpring(progress, {
-    stiffness: 140,
-    damping: 30,
-    mass: 0.4,
-    restDelta: 0.001,
-  });
-
-  // Blur is the one costly property in the scene transitions; phones do without.
-  const wide = useMediaQuery("(min-width: 768px)");
-
-  // The crop pan — see STORY_PAN for why a portrait film needs one.
-  const panY = useTransform(smooth, [...STORY_PAN.at], [...STORY_PAN.to]);
-  const objectPosition = useMotionTemplate`50% ${panY}`;
-
-  const stageOpacity = useTransform(
-    smooth,
-    [STORY_RELEASE.dissolve, STORY_RELEASE.done],
-    [1, 0],
-  );
-  // Once released, stop compositing a full-screen video layer behind the whole
-  // remaining scroll of the timeline.
-  const stageVisibility = useTransform(smooth, (value) =>
-    value > STORY_RELEASE.done ? "hidden" : "visible",
-  );
-  const vignetteOpacity = useTransform(
-    smooth,
-    [0, STORY_RELEASE.lift, STORY_RELEASE.dissolve],
-    [1, 1, 0.35],
-  );
-
-  return (
-    <>
-      <div
-        ref={track}
-        /*
-          `pointer-events-none` on the track, not just on the pin: the track's
-          own box overlaps the top viewport of the timeline below it, and an
-          element with no background still swallows clicks across its whole box.
-        */
-        className={cn(
-          "e-film-track pointer-events-none relative z-20",
-          STORY_SCROLL_HEIGHT,
-          "h-(--story-scroll)",
-        )}
-      >
-        <motion.div
-          aria-hidden
-          style={{ opacity: stageOpacity, visibility: stageVisibility }}
-          /*
-            `svh` for the pin and `svh` for the pull-up below, so the two always
-            agree. `dvh` would resize as a mobile URL bar hides, re-measuring
-            the track mid-scroll and jumping the film. Change one and you must
-            change the other.
-          */
-          className="e-film-pin pointer-events-none sticky top-0 h-svh overflow-hidden"
-        >
-          {/*
-            Two compositions, one video element, switched entirely in CSS.
-
-            The film is 720×1280. Below `lg` it runs full-bleed, which on a
-            portrait phone is close to its native size and is the right frame
-            for it. From `lg` up, filling a landscape viewport would mean
-            stretching 720 px across 1920 — a 2.67× upscale, and it looks it.
-            So at `lg` the film moves into a panel taking half the row, and the
-            copy runs down the column beside it. Half of the 1600 px-capped
-            container is ~760 px against a 720 px source: a 1.06× upscale at the
-            widest, and a downscale on anything narrower than a 1600 px frame.
-
-            Both boxes below use the same trick: `absolute inset-0` while the
-            layout is an overlay, `relative` once it becomes a column. Nothing
-            re-mounts across the breakpoint, so the film never reloads and the
-            scrub never resets.
-          */}
-          <div className="relative mx-auto flex h-full w-full max-w-[1600px] items-center lg:gap-12 lg:px-10 xl:gap-20">
-            <div
-              className={cn(
-                "absolute inset-0",
-                /*
-                  Half the row, and no aspect lock: at this width holding the
-                  source's 9:16 would make the panel 1350 px tall, far past the
-                  viewport. So height is set independently and the picture is
-                  cropped to fit — which is what `STORY_PAN` is for, and why it
-                  now does real work at `lg` rather than none.
-                */
-                "lg:relative lg:inset-auto lg:w-1/2 lg:shrink-0",
-                STORY_PANEL_HEIGHT,
-                /*
-                  Still set in from the edge rather than against it, so the
-                  panel reads as placed rather than as pushed up against the
-                  margin — but a much smaller inset than the narrow panel
-                  carried, because at half the row anything more starts eating
-                  the copy column. A percentage, not a `vw`: it resolves against
-                  the container's content box, which is capped at 1600px, so the
-                  panel keeps its relationship to the copy beside it instead of
-                  drifting further right the wider the screen gets. `ms-` is
-                  logical — in Arabic the whole composition mirrors and the
-                  inset moves with it.
-                */
-                "lg:ms-[3%]",
-                // The house treatment for a photograph — the same radius and
-                // hairline the timeline's own images carry.
-                "lg:overflow-hidden lg:rounded-[var(--radius-brand)] lg:border lg:border-gold-600/15",
-              )}
-            >
-              <ScrollFilm
-                progress={progress}
-                smooth={smooth}
-                src={STORY_VIDEO_URL}
-                poster={STORY_POSTER_URL}
-                still={brandMural}
-                stillFocus="50% 45%"
-                scrubEnd={STORY_SCRUB_END}
-                release={STORY_RELEASE}
-                objectPosition={objectPosition}
-                /*
-                  Tighter than the menu's default 150%. This section starts
-                  exactly one viewport down, so a 150% margin would arm the film
-                  at scroll zero and put a 4 MB fetch in competition with the
-                  hero's own `priority` photograph. At 80% it cannot fire until
-                  the guest has started moving, and it is still a full screen
-                  ahead of need.
-                */
-                armMargin="80% 0px"
-              />
-            </div>
-
-            {/*
-              Only the overlay needs a vignette. In the panel layout the copy
-              sits on the section's own dark ground, which already clears 4.5:1
-              without darkening the film.
-            */}
-            <motion.div
-              style={{ opacity: vignetteOpacity }}
-              className="e-film-vignette absolute inset-0 lg:hidden"
-            />
-
-            <div
-              className={cn(
-                "absolute inset-0 lg:relative lg:inset-auto lg:flex-1",
-                STORY_PANEL_HEIGHT,
-              )}
-            >
-              <FilmScenes
-                progress={smooth}
-                beats={STORY_SCENES}
-                copy={t.story.scenes}
-                cue={t.story.cue}
-                cueOut={STORY_CUE_OUT}
-                blur={wide}
-                // `items-start`/`text-start` are logical: the panel sits at the
-                // inline-start edge, so the whole composition mirrors in Arabic
-                // with no `rtl:` variant and no JS.
-                sceneClassName="lg:items-start lg:px-0 lg:pe-12 lg:text-start"
-                // Smaller in a column than it can afford to be across a full
-                // frame — 6.4vw would run to 76px against a 400px panel.
-                titleClassName="lg:text-[clamp(2rem,3.2vw,3.25rem)]"
-                cueClassName="lg:justify-start lg:px-0"
-              />
-            </div>
-          </div>
-
-          <FilmRail
-            progress={progress}
-            beats={STORY_SCENES}
-            label={t.story.railLabel}
-            release={STORY_RELEASE}
-          />
-        </motion.div>
-      </div>
-
-      {/*
-        Lifted exactly one viewport, so its top lands on the viewport top at the
-        instant the pin releases. The padding keeps the heading clear of the
-        fixed header, and means the heading is still just below the fold as the
-        film starts to go, leaving it something to rise into.
-      */}
-      <div className="relative z-10 mt-[-100svh] pt-28 sm:pt-36 lg:pt-44">
-        <StoryMilestones progress={smooth} />
-      </div>
-    </>
   );
 }

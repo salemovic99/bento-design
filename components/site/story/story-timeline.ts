@@ -1,105 +1,37 @@
-import type { Beat, Release } from "@/components/site/cinematic/film-timeline";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 
 /**
- * The cinematic story expressed as numbers, in one place.
+ * The story section's shared constants.
  *
- * Positions on the section's own scroll progress — see
- * `components/site/cinematic/film-timeline.ts` for what that axis is.
- *
- *   0 ──────────────────────────────────────────────────────────────────── 1
- *   [ room ]   [ light ]   [ walls ]   [ mark ]
- *   film scrub 0 ─────────────────────────► 0.88, then holds its last frame
- *                                    release 0.86 ──────────────────────► 1
- *                                   timeline rises 0.90 ──────────► 0.99
- *
- * The film is one continuous 9.81 s push-in with no cuts: the dining room
- * before service → the banquettes under the lamps → the mural → the etched
- * glass carrying the house's own name and date. Progress maps onto it at
- * roughly `progress × 11.15` seconds, which is where each beat's comment below
- * comes from — the copy is cut to the picture, not spaced evenly.
+ * The section used to run a scroll-scrubbed film, and everything that film
+ * needed — its scrub end, its release handover, its crop pan, its source URL —
+ * lived here. The film is gone; what is left is the order of the four scene
+ * lines and the height the frame and the copy column share.
  */
 
 /** Keyed off the dictionary, so a scene can never exist without its copy. */
 export type StorySceneKey = keyof Dictionary["story"]["scenes"];
 
-export const STORY_SCENES: readonly Beat<StorySceneKey>[] = [
-  // t ≈ 0.0–2.5 s — the set table, the room at night
-  { key: "room", start: 0.0, peak: 0.03, hold: 0.16, end: 0.22 },
-  // t ≈ 2.8–5.2 s — green banquettes, lamps, the mural coming into view
-  { key: "light", start: 0.25, peak: 0.3, hold: 0.41, end: 0.47 },
-  // t ≈ 5.6–8.0 s — the mural filling the frame
-  { key: "walls", start: 0.5, peak: 0.55, hold: 0.66, end: 0.72 },
-  // t ≈ 8.4–9.8 s — the etched glass: Geneva, since 1930
-  { key: "mark", start: 0.75, peak: 0.8, hold: 0.88, end: 0.93 },
+/**
+ * The four beats of the house's own room, in the order they are read:
+ * the dining room before service → the banquettes under the lamps → the mural →
+ * the etched glass carrying the house's name and date.
+ */
+export const STORY_SCENES: readonly StorySceneKey[] = [
+  "room",
+  "light",
+  "walls",
+  "mark",
 ];
 
 /**
- * Scroll progress at which the film reaches its final frame. The remaining 12%
- * is the release, and the picture holds still through it.
- */
-export const STORY_SCRUB_END = 0.88;
-
-/** The cue is gone almost as soon as the guest moves. */
-export const STORY_CUE_OUT = 0.04;
-
-/** The handover. */
-export const STORY_RELEASE: Release = {
-  lift: 0.86,
-  dissolve: 0.9,
-  done: 0.995,
-};
-
-/** The timeline's own heading rises while the film is dissolving. */
-export const STORY_INTRO = { start: 0.9, end: 0.99 } as const;
-
-/**
- * The scroll distance the section claims, as static utility classes. Shorter
- * than the menu's 260/420 — the film is 9.8 s against the menu's 14.5 s, and
- * this section sits second on the page where a long pin is felt more.
+ * The height of the picture frame at `lg`, and of the copy column beside it.
+ *
+ * One constant because the two must agree: the frame and the column are
+ * siblings in a centred flex row, and if their heights drift apart the copy
+ * stops sitting level with the picture.
  *
  * It has to be a literal string: Tailwind reads source text, so a class built
  * from a runtime value — `h-[${something}]` — compiles to nothing at all.
  */
-export const STORY_SCROLL_HEIGHT =
-  "[--story-scroll:220vh] md:[--story-scroll:360vh]";
-
-/**
- * The height of the film panel at `lg`, and of the copy column beside it.
- *
- * One constant because the two must agree: the panel and the column are
- * siblings in a centred flex row, and if their heights drift apart the copy
- * stops sitting level with the picture. `story-still.tsx` uses it too, so the
- * reduced-motion composition keeps the same proportions.
- *
- * A literal string, for the same reason `STORY_SCROLL_HEIGHT` is one.
- */
 export const STORY_PANEL_HEIGHT = "lg:h-[min(84svh,50rem)]";
-
-/**
- * The vertical crop, panned across the scroll.
- *
- * The source is 720×1280. Wherever it is shown in a box less tall than 16:9 —
- * a landscape phone, a tablet, the `lg` panel — `object-cover` keeps the full
- * width and crops the height, and the film's subjects do not sit at one height:
- * the set table reads at 55%, the figure past the mahogany column at 45%, the
- * mural's face at 34% (at 50% it is cut at the chin), and the etched mark at
- * 59% (higher and "GENEVA" is clipped away).
- *
- * So the crop lifts to find the face and settles back down onto the mark, which
- * reads as a camera rather than a slider, and holds at 59% through the release
- * so the last thing on screen is the house's own name.
- *
- * The panel is roughly 19:20 now that it takes half the row, so this is what
- * keeps each moment in frame there — it used to be a no-op at `lg`, when the
- * panel was cut to the source's own 9:16. On a portrait phone, which is close
- * to 9:16, there is still no overflow to move within and the percentage does
- * nothing, at no cost.
- */
-export const STORY_PAN = {
-  at: [0, 0.3, 0.55, 0.84, 1],
-  to: ["55%", "45%", "34%", "59%", "59%"],
-} as const;
-
-export const STORY_VIDEO_URL = "/videos/story.mp4";
-export const STORY_POSTER_URL = "/videos/story-poster.jpg";

@@ -3,13 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
-import {
-  motion,
-  useMotionValue,
-  useScroll,
-  useTransform,
-  type MotionValue,
-} from "framer-motion";
+import { motion, useScroll } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { milestones } from "@/content/story";
 import { useLanguage } from "@/lib/i18n/language-provider";
@@ -17,12 +11,11 @@ import { useBrandMotion, viewportOnce } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { Reveal } from "../reveal";
 import { SectionHeading } from "../section-heading";
-import { STORY_INTRO } from "./story-timeline";
 
 import symbolGold from "@/public/brand/symbol-gold.png";
 
 /**
- * The heritage timeline — the thing the film was introducing.
+ * The heritage timeline, and the substance of the story section.
  *
  * Geneva 1930 → the sauce → the crossing → four rooms. A single gold rail runs
  * the length of the beats and draws itself as the guest scrolls, with the house
@@ -36,26 +29,13 @@ import symbolGold from "@/public/brand/symbol-gold.png";
  * the writing direction, so the whole composition mirrors itself in Arabic with
  * no `rtl:` variants at all.
  *
- * It takes an optional `progress`, and that optionality is the interesting
- * part. Inside the cinematic stage this block is pulled up a full viewport and
- * sits *behind* the still-opaque film long before it is visible, so a normal
- * `whileInView` reveal would play out entirely unseen and the guest would find
- * the heading already there. With `progress` it is driven off the section's
- * scroll instead, rising exactly as the film dissolves. Without it — the
- * reduced-motion path — it falls back to `SectionHeading` like every other
- * section on the page.
- *
- * The rail's own `useScroll` is unaffected either way: it measures the `<ol>`,
- * which is in normal flow inside the lifted block.
+ * The heading reveals on `SectionHeading` like every other section on the page.
+ * It used to have a second path — driven off the section's own scroll, so it
+ * could rise exactly as the film dissolved above it — which the film's removal
+ * took with it.
  */
-export function StoryMilestones({
-  progress,
-  className,
-}: {
-  progress?: MotionValue<number>;
-  className?: string;
-}) {
-  const { t, pick, lang } = useLanguage();
+export function StoryMilestones({ className }: { className?: string }) {
+  const { t, pick } = useLanguage();
   const m = useBrandMotion();
   const list = useRef<HTMLOListElement>(null);
 
@@ -66,20 +46,6 @@ export function StoryMilestones({
     offset: ["start 75%", "end 75%"],
   });
 
-  // A constant stand-in so the hooks below run unconditionally in both paths.
-  const settled = useMotionValue(1);
-  const source = progress ?? settled;
-  const introOpacity = useTransform(
-    source,
-    [STORY_INTRO.start, STORY_INTRO.end],
-    [0, 1],
-  );
-  const introY = useTransform(
-    source,
-    [STORY_INTRO.start, STORY_INTRO.end],
-    [40, 0],
-  );
-
   return (
     <div
       className={cn(
@@ -88,34 +54,11 @@ export function StoryMilestones({
       )}
     >
       {/* ── Heading ────────────────────────────────────────────────────── */}
-      {progress ? (
-        <motion.div
-          key={lang}
-          style={m.reduced ? undefined : { opacity: introOpacity, y: introY }}
-          className="max-w-2xl"
-        >
-          <p className="e-eyebrow">{t.story.eyebrow}</p>
-          <h2 className="mt-4 sm:mt-5">
-            {t.story.headline.map((line, index) => (
-              <span
-                key={index}
-                className="block text-[clamp(1.875rem,4.4vw,3.25rem)] font-bold leading-[1.05] tracking-[var(--track-tight)] text-white"
-              >
-                {line}
-              </span>
-            ))}
-          </h2>
-          <p className="e-body-lg mt-5 text-pretty text-gold-200/80 sm:mt-6">
-            {t.story.lede}
-          </p>
-        </motion.div>
-      ) : (
-        <SectionHeading
-          eyebrow={t.story.eyebrow}
-          lines={t.story.headline}
-          lede={t.story.lede}
-        />
-      )}
+      <SectionHeading
+        eyebrow={t.story.eyebrow}
+        lines={t.story.headline}
+        lede={t.story.lede}
+      />
 
       {/* ── The beats ──────────────────────────────────────────────────── */}
       <div className="relative mx-auto mt-12 max-w-5xl sm:mt-16 lg:mt-20">
