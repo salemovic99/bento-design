@@ -39,11 +39,11 @@ export default function Home() {
         <div id="top" />
         <Hero />
         <SectionTransition from="green-900" to="green-900" />
-        <StorySection />
-        <SectionTransition from="green-900" to="green-900" />
         <SignatureDishes />
         <SectionTransition from="green-900" to="green-900" />
         <MenuSection />
+        <SectionTransition from="green-900" to="green-900" />
+        <StorySection />
         <SectionTransition from="green-900" to="cream" />
         <Branches />
         <SectionTransition from="cream" to="green-900" />
